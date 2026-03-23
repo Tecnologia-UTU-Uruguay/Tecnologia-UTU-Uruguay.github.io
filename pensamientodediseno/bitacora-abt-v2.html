@@ -1,0 +1,2898 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Bitácora digital ABT - UTU Educación Básica Integral">
+<title>Bitácora ABT · UTU</title>
+
+<!-- ============================================================
+  BITÁCORA DIGITAL ABT - UTU
+  Versión 2.0 - Offline First / Apta para Plan Ceibal
+  Sin dependencias externas. Funciona sin internet.
+  PDF generado con estilos de impresión (window.print)
+  Autoguardado en localStorage cada 20 segundos
+  Compatible: Chromium 80+, Firefox 78+
+============================================================ -->
+
+<style>
+/* =============================================
+   1. VARIABLES DE DISEÑO
+   Sistema de colores y espaciado unificado
+============================================= */
+:root {
+  /* Colores base */
+  --bg:      #fafaf8;
+  --bg2:     #f3f3f0;
+  --bg3:     #eaeae6;
+  --border:  #deded8;
+  --border2: #c8c8c0;
+
+  /* Texto */
+  --text:    #18181a;
+  --text2:   #52525a;
+  --text3:   #8888a0;
+
+  /* Etapas */
+  --e1:        #d97706;   /* ámbar */
+  --e1-bg:     #fffbeb;
+  --e1-light:  #fef3c7;
+  --e2:        #2563eb;   /* azul */
+  --e2-bg:     #eff6ff;
+  --e2-light:  #dbeafe;
+  --e3:        #16a34a;   /* verde */
+  --e3-bg:     #f0fdf4;
+  --e3-light:  #dcfce7;
+
+  /* Feedback */
+  --ok:     #16a34a;
+  --warn:   #d97706;
+  --danger: #dc2626;
+
+  /* Espaciado */
+  --radius:    8px;
+  --radius-lg: 14px;
+  --shadow:    0 1px 3px rgba(0,0,0,.07), 0 4px 12px rgba(0,0,0,.04);
+  --shadow-md: 0 2px 8px rgba(0,0,0,.09), 0 8px 24px rgba(0,0,0,.06);
+
+  /* Layout */
+  --sidebar-w: 256px;
+}
+
+/* =============================================
+   2. RESET Y BASE
+============================================= */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; font-size: 15px; }
+
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+  background: var(--bg2);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* =============================================
+   3. LAYOUT PRINCIPAL
+============================================= */
+.app {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ─── SIDEBAR ─── */
+.sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--bg);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 50;
+  scrollbar-width: thin;
+}
+
+.sidebar-header {
+  padding: 20px 16px 14px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.sidebar-logo { display: flex; align-items: center; gap: 10px; }
+.sidebar-logo-icon {
+  width: 36px; height: 36px; border-radius: 9px;
+  background: var(--text); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.sidebar-logo-text h1 {
+  font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.2;
+}
+.sidebar-logo-text p { font-size: 11px; color: var(--text3); }
+
+/* Modo docente badge */
+.mode-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  margin-top: 8px; padding: 3px 10px;
+  border-radius: 999px; font-size: 11px; font-weight: 600;
+  background: var(--bg2); border: 1px solid var(--border);
+  color: var(--text3); cursor: pointer;
+  transition: all .15s; width: 100%; justify-content: center;
+}
+.mode-badge.teacher-on {
+  background: #fef3c7; border-color: #d97706;
+  color: #92400e;
+}
+
+/* Nav */
+.sidebar-nav { padding: 10px 8px; flex: 1; }
+
+.nav-group-label {
+  font-size: 10.5px; font-weight: 700; color: var(--text3);
+  text-transform: uppercase; letter-spacing: .08em;
+  padding: 10px 8px 4px; display: flex; align-items: center; gap: 6px;
+}
+.nav-group-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+
+.nav-btn {
+  display: flex; align-items: center; gap: 9px;
+  width: 100%; padding: 7px 8px;
+  border-radius: 7px; border: none; background: none;
+  font-size: 13.5px; color: var(--text2);
+  cursor: pointer; text-align: left;
+  transition: background .12s, color .12s;
+  font-family: inherit;
+  position: relative;
+}
+.nav-btn:hover  { background: var(--bg2); color: var(--text); }
+.nav-btn.active { background: var(--bg3); color: var(--text); font-weight: 600; }
+
+.nav-btn-icon { font-size: 15px; width: 20px; text-align: center; flex-shrink: 0; }
+.nav-btn-label { flex: 1; line-height: 1.3; }
+
+/* Indicador de estado de sección */
+.nav-state {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--border2); flex-shrink: 0;
+  transition: background .2s;
+}
+.nav-state.done    { background: var(--ok); }
+.nav-state.partial { background: var(--warn); }
+
+/* Sidebar acciones */
+.sidebar-actions {
+  padding: 10px 8px 14px;
+  border-top: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 5px;
+  flex-shrink: 0;
+}
+
+.btn-action {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 12px; border-radius: var(--radius);
+  font-size: 13px; font-weight: 500; font-family: inherit;
+  border: 1px solid var(--border); background: var(--bg);
+  color: var(--text2); cursor: pointer;
+  transition: all .15s; width: 100%;
+}
+.btn-action:hover { background: var(--bg2); border-color: var(--border2); color: var(--text); }
+.btn-action.primary { background: var(--text); color: #fff; border-color: var(--text); }
+.btn-action.primary:hover { background: #2a2a30; }
+.btn-action.success { background: #16a34a; color: #fff; border-color: #16a34a; }
+.btn-action.success:hover { background: #15803d; }
+.btn-action.danger-outline { border-color: #fca5a5; color: var(--danger); }
+.btn-action.danger-outline:hover { background: #fef2f2; }
+
+/* ─── MAIN CONTENT ─── */
+.main {
+  flex: 1;
+  padding: 28px 32px 60px;
+  max-width: 860px;
+  min-width: 0;
+}
+
+/* =============================================
+   4. ENCABEZADO DEL PROYECTO
+============================================= */
+.project-header {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 24px 28px;
+  margin-bottom: 20px; box-shadow: var(--shadow);
+}
+.project-name-input {
+  width: 100%; border: none; outline: none; background: transparent;
+  font-size: 26px; font-weight: 800; color: var(--text);
+  letter-spacing: -.4px; line-height: 1.2;
+  border-bottom: 2px dashed var(--border);
+  padding-bottom: 6px; margin-bottom: 16px;
+  font-family: inherit;
+  transition: border-color .15s;
+}
+.project-name-input:focus { border-bottom-color: var(--border2); }
+.project-name-input::placeholder { color: var(--border2); font-weight: 600; }
+
+.project-meta-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px;
+}
+.meta-field label {
+  display: block; font-size: 10.5px; font-weight: 700;
+  color: var(--text3); text-transform: uppercase;
+  letter-spacing: .07em; margin-bottom: 4px;
+}
+.meta-input {
+  width: 100%; padding: 7px 10px;
+  border: 1px solid var(--border); border-radius: 6px;
+  font-size: 13.5px; font-family: inherit; color: var(--text);
+  background: var(--bg2); outline: none;
+  transition: border-color .15s, background .15s;
+}
+.meta-input:focus { border-color: var(--border2); background: var(--bg); }
+.meta-input::placeholder { color: var(--text3); }
+
+/* =============================================
+   5. BARRA DE PROGRESO
+============================================= */
+.progress-card {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 18px 24px;
+  margin-bottom: 20px; box-shadow: var(--shadow);
+}
+.progress-header {
+  display: flex; justify-content: space-between;
+  align-items: center; margin-bottom: 10px;
+}
+.progress-header span { font-size: 13px; font-weight: 600; color: var(--text2); }
+.progress-pct { font-size: 15px; font-weight: 800; color: var(--text); }
+
+.progress-track {
+  background: var(--bg3); border-radius: 999px;
+  height: 10px; overflow: hidden; margin-bottom: 12px;
+}
+.progress-fill {
+  height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg, var(--e1) 0%, var(--e2) 50%, var(--e3) 100%);
+  transition: width .6s cubic-bezier(.4,0,.2,1);
+  width: 0%;
+}
+
+.progress-stages {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;
+}
+.stage-pill {
+  padding: 6px 10px; border-radius: 7px;
+  border: 1px solid var(--border); background: var(--bg2);
+  text-align: center; font-size: 12px; font-weight: 500; color: var(--text3);
+  transition: all .2s;
+}
+.stage-pill span { display: block; font-size: 10px; margin-top: 1px; }
+.stage-pill.started { border-color: var(--e1); color: #92400e; background: #fffbeb; }
+.stage-pill.done    { border-color: var(--e3); color: #14532d; background: #f0fdf4; }
+
+/* =============================================
+   6. PÁGINAS / ETAPAS
+============================================= */
+.page { display: none; }
+.page.active { display: block; }
+
+/* Stage header */
+.stage-header {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 20px;
+}
+.stage-icon {
+  width: 48px; height: 48px; border-radius: 13px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; flex-shrink: 0;
+}
+.stage-icon.e1 { background: var(--e1-light); }
+.stage-icon.e2 { background: var(--e2-light); }
+.stage-icon.e3 { background: var(--e3-light); }
+
+.stage-title h2 { font-size: 22px; font-weight: 800; color: var(--text); letter-spacing: -.3px; }
+.stage-title p  { font-size: 13px; color: var(--text3); margin-top: 2px; }
+
+/* =============================================
+   7. CARDS DE SECCIÓN
+============================================= */
+.section-card {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); margin-bottom: 14px;
+  box-shadow: var(--shadow); overflow: hidden;
+}
+
+.section-card-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 15px 18px; cursor: pointer; user-select: none;
+  border-bottom: 1px solid transparent; transition: border-color .15s;
+}
+.section-card-header.open { border-bottom-color: var(--border); }
+.section-card-header:hover { background: var(--bg2); }
+
+.sec-icon { font-size: 18px; flex-shrink: 0; }
+.sec-info { flex: 1; min-width: 0; }
+.sec-title { font-size: 15px; font-weight: 700; color: var(--text); }
+.sec-desc  { font-size: 12px; color: var(--text3); margin-top: 1px; }
+
+/* Estado de sección */
+.sec-state-badge {
+  font-size: 11px; font-weight: 600; padding: 2px 8px;
+  border-radius: 999px; flex-shrink: 0;
+  background: var(--bg3); color: var(--text3);
+  border: 1px solid var(--border);
+}
+.sec-state-badge.partial { background: #fffbeb; color: #92400e; border-color: #fde68a; }
+.sec-state-badge.done    { background: #f0fdf4; color: #14532d; border-color: #bbf7d0; }
+
+.sec-toggle { color: var(--text3); font-size: 16px; transition: transform .2s; flex-shrink: 0; }
+.sec-toggle.open { transform: rotate(180deg); }
+
+/* Body de la sección */
+.section-card-body { display: none; padding: 20px; }
+.section-card-body.open { display: block; }
+
+/* =============================================
+   8. ANDAMIAJE PEDAGÓGICO
+   Consigna, ejemplo, indicador de logro
+============================================= */
+.pedagogical-scaffold {
+  border-radius: var(--radius);
+  margin-bottom: 18px; overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.scaffold-item {
+  display: flex; gap: 12px; padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+.scaffold-item:last-child { border-bottom: none; }
+
+/* Variante: visible solo en modo docente */
+.scaffold-item.teacher-only { display: none; }
+body.teacher-mode .scaffold-item.teacher-only { display: flex; }
+
+.scaffold-icon {
+  font-size: 18px; flex-shrink: 0; width: 24px; text-align: center;
+  margin-top: 1px;
+}
+.scaffold-content {}
+.scaffold-label {
+  font-size: 10.5px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .07em; color: var(--text3); margin-bottom: 3px;
+}
+.scaffold-text { font-size: 13px; color: var(--text2); line-height: 1.55; }
+.scaffold-text strong { color: var(--text); font-weight: 600; }
+.scaffold-text em { color: var(--text3); font-style: italic; }
+
+/* Color coding */
+.scaffold-item.consigna { background: #f8faff; }
+.scaffold-item.consigna .scaffold-label { color: var(--e2); }
+.scaffold-item.ejemplo   { background: #fafff8; }
+.scaffold-item.ejemplo   .scaffold-label { color: var(--e3); }
+.scaffold-item.logro     { background: #fffdf5; }
+.scaffold-item.logro     .scaffold-label { color: var(--e1); }
+.scaffold-item.docente   { background: #fdf4ff; }
+.scaffold-item.docente   .scaffold-label { color: #9333ea; }
+
+/* =============================================
+   9. CAMPOS DE FORMULARIO
+============================================= */
+.field-group { margin-bottom: 18px; }
+.field-group:last-child { margin-bottom: 0; }
+
+.field-label {
+  font-size: 11px; font-weight: 700; color: var(--text3);
+  text-transform: uppercase; letter-spacing: .07em;
+  margin-bottom: 7px; display: flex; align-items: center; gap: 6px;
+}
+.field-required { color: var(--danger); font-size: 13px; }
+
+.field-textarea {
+  width: 100%; min-height: 120px;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 12px 14px; font-size: 14px; font-family: inherit;
+  color: var(--text); background: var(--bg2);
+  resize: vertical; outline: none; line-height: 1.65;
+  transition: border-color .15s, background .15s;
+}
+.field-textarea:focus { border-color: var(--border2); background: var(--bg); }
+.field-textarea::placeholder { color: var(--text3); }
+.field-textarea.invalid { border-color: #fca5a5; background: #fef2f2; }
+
+/* Contador de caracteres */
+.char-counter {
+  text-align: right; font-size: 11px; color: var(--text3); margin-top: 4px;
+}
+.char-counter.warn { color: var(--ok); font-weight: 600; }
+
+/* Observaciones del docente */
+.teacher-obs-wrap { display: none; margin-top: 12px; }
+body.teacher-mode .teacher-obs-wrap { display: block; }
+.teacher-obs-label {
+  font-size: 11px; font-weight: 700; color: #9333ea;
+  text-transform: uppercase; letter-spacing: .07em;
+  margin-bottom: 5px; display: flex; align-items: center; gap: 5px;
+}
+.teacher-obs-textarea {
+  width: 100%; min-height: 70px;
+  border: 1px dashed #c084fc; border-radius: var(--radius);
+  padding: 10px 12px; font-size: 13px; font-family: inherit;
+  color: #581c87; background: #fdf4ff;
+  resize: vertical; outline: none; line-height: 1.5;
+}
+.teacher-obs-textarea::placeholder { color: #c084fc; }
+
+/* =============================================
+   10. UPLOAD DE IMÁGENES
+============================================= */
+.img-upload-zone {
+  border: 2px dashed var(--border); border-radius: var(--radius);
+  padding: 24px 16px; text-align: center; cursor: pointer;
+  background: var(--bg2); position: relative;
+  transition: border-color .15s, background .15s;
+}
+.img-upload-zone:hover { border-color: var(--border2); background: var(--bg3); }
+.img-upload-zone input[type="file"] {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer;
+  width: 100%; height: 100%;
+}
+.upload-icon  { font-size: 26px; margin-bottom: 6px; }
+.upload-text  { font-size: 13px; color: var(--text3); font-weight: 500; }
+.upload-hint  { font-size: 11px; color: var(--text3); margin-top: 3px; }
+
+.img-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px; margin-top: 12px;
+}
+.img-item {
+  position: relative; border-radius: 7px; overflow: hidden;
+  border: 1px solid var(--border); background: var(--bg3);
+  aspect-ratio: 1;
+}
+.img-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.img-remove {
+  position: absolute; top: 5px; right: 5px;
+  background: rgba(0,0,0,.65); color: #fff;
+  border: none; border-radius: 50%;
+  width: 22px; height: 22px; font-size: 13px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background .15s; line-height: 1;
+}
+.img-remove:hover { background: rgba(180,0,0,.85); }
+
+/* Caption de imagen */
+.img-caption-input {
+  width: 100%; padding: 4px 6px; border-radius: 4px;
+  border: 1px solid var(--border); font-size: 11px;
+  font-family: inherit; background: var(--bg);
+  color: var(--text2); outline: none;
+  margin-top: 4px; resize: none;
+}
+
+/* =============================================
+   11. SECCIÓN ACCIONES
+============================================= */
+.section-footer {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 16px; padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.section-footer-left { flex: 1; }
+.btn-sm {
+  display: flex; align-items: center; gap: 5px;
+  padding: 6px 12px; border-radius: 6px;
+  font-size: 12px; font-weight: 500; font-family: inherit;
+  border: 1px solid var(--border); background: var(--bg2);
+  color: var(--text2); cursor: pointer; transition: all .14s;
+}
+.btn-sm:hover { background: var(--bg3); border-color: var(--border2); color: var(--text); }
+.btn-sm.danger:hover { background: #fef2f2; border-color: #fca5a5; color: var(--danger); }
+
+/* =============================================
+   12. DASHBOARD / INICIO
+============================================= */
+.welcome-hero {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 28px 30px;
+  margin-bottom: 16px; box-shadow: var(--shadow);
+  background: linear-gradient(135deg, #fffbeb 0%, #eff6ff 50%, #f0fdf4 100%);
+}
+.welcome-hero h2 { font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 8px; letter-spacing: -.3px; }
+.welcome-hero p  { font-size: 14px; color: var(--text2); line-height: 1.65; max-width: 580px; }
+
+.steps-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 10px; margin-top: 18px;
+}
+.step-item {
+  background: rgba(255,255,255,.8); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px 16px;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.step-num {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--text); color: #fff; font-size: 12px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.step-body strong { display: block; font-size: 13px; font-weight: 700; color: var(--text); }
+.step-body span   { font-size: 12px; color: var(--text3); }
+
+.dash-cards {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+  margin-bottom: 16px;
+}
+.dash-card {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 18px 20px;
+  box-shadow: var(--shadow); cursor: pointer;
+  transition: transform .15s, box-shadow .15s;
+  border-top-width: 3px;
+}
+.dash-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.dash-card.e1 { border-top-color: var(--e1); }
+.dash-card.e2 { border-top-color: var(--e2); }
+.dash-card.e3 { border-top-color: var(--e3); }
+.dash-card-icon  { font-size: 28px; margin-bottom: 10px; }
+.dash-card-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 5px; }
+.dash-card-desc  { font-size: 12px; color: var(--text3); line-height: 1.5; }
+.dash-card-stat  {
+  margin-top: 12px; font-size: 12px; font-weight: 600;
+  padding: 3px 9px; border-radius: 999px; display: inline-block;
+}
+.dash-card.e1 .dash-card-stat { background: var(--e1-light); color: #78350f; }
+.dash-card.e2 .dash-card-stat { background: var(--e2-light); color: #1e3a8a; }
+.dash-card.e3 .dash-card-stat { background: var(--e3-light); color: #14532d; }
+
+/* Aviso autoguardado */
+.autosave-bar {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 10px 14px;
+  font-size: 12px; color: var(--text3);
+}
+.autosave-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--border2); flex-shrink: 0;
+  transition: background .3s;
+}
+.autosave-dot.saving { background: var(--warn); }
+.autosave-dot.saved  { background: var(--ok); }
+
+/* =============================================
+   13. MODAL
+============================================= */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.38); z-index: 999;
+  align-items: center; justify-content: center;
+}
+.modal-overlay.show { display: flex; }
+.modal-box {
+  background: var(--bg); border-radius: var(--radius-lg);
+  padding: 28px 30px; max-width: 400px; width: 92%;
+  box-shadow: 0 20px 60px rgba(0,0,0,.18);
+}
+.modal-box h3 { font-size: 17px; font-weight: 800; color: var(--text); margin-bottom: 8px; }
+.modal-box p  { font-size: 14px; color: var(--text2); line-height: 1.6; margin-bottom: 20px; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+.btn-modal {
+  padding: 8px 18px; border-radius: 7px; font-size: 13.5px;
+  font-weight: 600; font-family: inherit; cursor: pointer;
+  border: 1px solid var(--border); background: var(--bg2); color: var(--text);
+  transition: all .14s;
+}
+.btn-modal:hover { background: var(--bg3); }
+.btn-modal.danger { background: var(--danger); color: #fff; border-color: var(--danger); }
+.btn-modal.danger:hover { background: #b91c1c; }
+.btn-modal.success { background: var(--ok); color: #fff; border-color: var(--ok); }
+
+/* =============================================
+   14. TOASTS
+============================================= */
+.toast-stack {
+  position: fixed; bottom: 20px; right: 20px;
+  z-index: 9999; display: flex; flex-direction: column; gap: 6px;
+}
+.toast {
+  background: var(--text); color: #fff;
+  padding: 11px 16px; border-radius: 9px;
+  font-size: 13.5px; box-shadow: var(--shadow-md);
+  max-width: 300px; display: flex; align-items: center; gap: 8px;
+  animation: toastIn .25s ease;
+}
+.toast.ok      { background: #16a34a; }
+.toast.warn    { background: #d97706; }
+.toast.error   { background: #dc2626; }
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* =============================================
+   15. TOPBAR MOBILE
+============================================= */
+.topbar {
+  display: none; align-items: center; gap: 10px;
+  background: var(--bg); border-bottom: 1px solid var(--border);
+  padding: 12px 16px; position: sticky; top: 0; z-index: 60;
+}
+.topbar-menu { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text); }
+.topbar h2   { font-size: 15px; font-weight: 700; color: var(--text); }
+
+.sidebar-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.35); z-index: 49;
+}
+.sidebar-overlay.show { display: block; }
+
+/* =============================================
+   16. VALIDACIÓN VISUAL
+============================================= */
+.validation-msg {
+  font-size: 11.5px; color: var(--danger); margin-top: 5px;
+  display: none; align-items: center; gap: 4px;
+}
+.validation-msg.show { display: flex; }
+
+/* =============================================
+   17. RESPONSIVE
+============================================= */
+@media (max-width: 780px) {
+  .sidebar {
+    position: fixed; left: 0; top: 0; height: 100vh;
+    transform: translateX(-100%); transition: transform .28s ease;
+    z-index: 100;
+  }
+  .sidebar.open { transform: translateX(0); }
+  .topbar { display: flex; }
+  .main   { padding: 16px 14px 60px; }
+  .project-meta-grid { grid-template-columns: 1fr 1fr; }
+  .dash-cards   { grid-template-columns: 1fr; }
+  .steps-grid   { grid-template-columns: 1fr; }
+  .progress-stages { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 460px) {
+  .project-meta-grid { grid-template-columns: 1fr; }
+  .project-name-input { font-size: 20px; }
+}
+
+/* =============================================
+   18. ESTILOS DE IMPRESIÓN (PDF via window.print)
+   Se activa solo al imprimir/generar PDF
+============================================= */
+@media print {
+  /* Ocultar toda la UI */
+  .sidebar, .topbar, .sidebar-overlay,
+  .progress-card, .toast-stack, .modal-overlay,
+  .section-card-header, .section-footer,
+  .img-upload-zone, .btn-sm, .btn-action,
+  .autosave-bar, .teacher-obs-wrap,
+  .nav-btn, .sidebar-actions { display: none !important; }
+
+  /* Mostrar solo el contenido de impresión */
+  .print-only { display: block !important; }
+
+  body { background: #fff; font-size: 11pt; color: #111; }
+  .app  { display: block; }
+  .main { padding: 0; max-width: 100%; }
+
+  /* Todas las páginas visibles al imprimir */
+  .page { display: block !important; break-before: page; }
+  #page-dashboard { display: none !important; }
+
+  .section-card-body { display: block !important; }
+  .section-card { box-shadow: none; border: 1px solid #ddd; break-inside: avoid; margin-bottom: 10pt; }
+
+  .stage-header { break-before: page; margin-top: 20pt; }
+  .stage-icon   { display: none; }
+  .stage-title h2 { font-size: 16pt; color: #111; }
+  .stage-title p  { font-size: 9pt; color: #666; }
+
+  .field-textarea {
+    border: 1px solid #ccc; background: #fff;
+    min-height: unset; resize: none;
+    font-size: 10pt; padding: 8pt;
+  }
+
+  /* Encabezado de impresión */
+  .print-cover {
+    text-align: center; padding: 40pt 20pt;
+    border-bottom: 3pt solid #111; margin-bottom: 20pt;
+    break-after: page;
+  }
+  .print-cover h1 { font-size: 24pt; font-weight: 900; margin-bottom: 8pt; }
+  .print-cover .print-subtitle { font-size: 11pt; color: #666; margin-bottom: 20pt; }
+  .print-meta-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 10pt; max-width: 400pt; margin: 0 auto;
+    text-align: left;
+  }
+  .print-meta-item { border: 1pt solid #ddd; border-radius: 4pt; padding: 8pt 10pt; }
+  .print-meta-label { font-size: 8pt; font-weight: 700; text-transform: uppercase; color: #888; letter-spacing: .05em; }
+  .print-meta-value { font-size: 11pt; font-weight: 600; color: #111; margin-top: 2pt; }
+
+  .img-grid { grid-template-columns: repeat(3, 1fr); gap: 6pt; }
+  .img-item  { aspect-ratio: 4/3; }
+  .img-remove { display: none; }
+
+  .pedagogical-scaffold { display: none; }
+
+  a { text-decoration: none; color: inherit; }
+}
+
+/* Elemento visible solo al imprimir */
+.print-only { display: none; }
+
+/* =============================================
+   19. MICRO-INTERACCIONES LIVIANAS
+   Mínimas para no cargar equipos lentos
+============================================= */
+.page.active {
+  animation: pageIn .2s ease;
+}
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Highlight de campo cuando hay error de validación */
+.shake {
+  animation: shake .35s ease;
+}
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+/* =============================================
+   FIN DE ESTILOS
+============================================= */
+</style>
+</head>
+
+<body>
+
+<!-- ============================================================
+  ESTRUCTURA HTML
+  Organización: Sidebar | Main
+  Páginas: dashboard, e1s1..e1s4, e2s1..e2s5, e3s1..e3s3
+============================================================ -->
+
+<!-- OVERLAY MOBILE -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="UI.closeSidebar()"></div>
+
+<div class="app">
+
+<!-- ═══════════════════════════════════
+     SIDEBAR DE NAVEGACIÓN
+═══════════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">📓</div>
+      <div class="sidebar-logo-text">
+        <h1>Bitácora ABT</h1>
+        <p>UTU · Educación Básica</p>
+      </div>
+    </div>
+    <button class="mode-badge" id="teacherToggle" onclick="UI.toggleTeacherMode()">
+      🎓 Activar Modo Docente
+    </button>
+  </div>
+
+  <nav class="sidebar-nav">
+
+    <div class="nav-group-label">General</div>
+    <button class="nav-btn active" id="nav-dashboard" onclick="UI.showPage('dashboard')">
+      <span class="nav-btn-icon">🏠</span>
+      <span class="nav-btn-label">Inicio</span>
+    </button>
+
+    <div class="nav-group-label">
+      <span class="nav-group-dot" style="background:var(--e1)"></span>
+      Etapa 1 · Explorar
+    </div>
+    <button class="nav-btn" id="nav-e1s1" onclick="UI.showPage('e1s1')">
+      <span class="nav-btn-icon">🗺️</span>
+      <span class="nav-btn-label">Cartografía colectiva</span>
+      <span class="nav-state" id="state-e1s1"></span>
+    </button>
+    <button class="nav-btn" id="nav-e1s2" onclick="UI.showPage('e1s2')">
+      <span class="nav-btn-icon">👤</span>
+      <span class="nav-btn-label">Mapa persona</span>
+      <span class="nav-state" id="state-e1s2"></span>
+    </button>
+    <button class="nav-btn" id="nav-e1s3" onclick="UI.showPage('e1s3')">
+      <span class="nav-btn-icon">📚</span>
+      <span class="nav-btn-label">Revisión de textos</span>
+      <span class="nav-state" id="state-e1s3"></span>
+    </button>
+    <button class="nav-btn" id="nav-e1s4" onclick="UI.showPage('e1s4')">
+      <span class="nav-btn-icon">✅</span>
+      <span class="nav-btn-label">Cierre de Etapa 1</span>
+      <span class="nav-state" id="state-e1s4"></span>
+    </button>
+
+    <div class="nav-group-label">
+      <span class="nav-group-dot" style="background:var(--e2)"></span>
+      Etapa 2 · Definir
+    </div>
+    <button class="nav-btn" id="nav-e2s1" onclick="UI.showPage('e2s1')">
+      <span class="nav-btn-icon">⚖️</span>
+      <span class="nav-btn-label">Ecualizador</span>
+      <span class="nav-state" id="state-e2s1"></span>
+    </button>
+    <button class="nav-btn" id="nav-e2s2" onclick="UI.showPage('e2s2')">
+      <span class="nav-btn-icon">🌳</span>
+      <span class="nav-btn-label">Árbol de problemas</span>
+      <span class="nav-state" id="state-e2s2"></span>
+    </button>
+    <button class="nav-btn" id="nav-e2s3" onclick="UI.showPage('e2s3')">
+      <span class="nav-btn-icon">❓</span>
+      <span class="nav-btn-label">Pregunta guía</span>
+      <span class="nav-state" id="state-e2s3"></span>
+    </button>
+    <button class="nav-btn" id="nav-e2s4" onclick="UI.showPage('e2s4')">
+      <span class="nav-btn-icon">💎</span>
+      <span class="nav-btn-label">Rombo de requisitos</span>
+      <span class="nav-state" id="state-e2s4"></span>
+    </button>
+    <button class="nav-btn" id="nav-e2s5" onclick="UI.showPage('e2s5')">
+      <span class="nav-btn-icon">✅</span>
+      <span class="nav-btn-label">Cierre de Etapa 2</span>
+      <span class="nav-state" id="state-e2s5"></span>
+    </button>
+
+    <div class="nav-group-label">
+      <span class="nav-group-dot" style="background:var(--e3)"></span>
+      Etapa 3 · Crear
+    </div>
+    <button class="nav-btn" id="nav-e3s1" onclick="UI.showPage('e3s1')">
+      <span class="nav-btn-icon">💡</span>
+      <span class="nav-btn-label">Ideas Van!</span>
+      <span class="nav-state" id="state-e3s1"></span>
+    </button>
+    <button class="nav-btn" id="nav-e3s2" onclick="UI.showPage('e3s2')">
+      <span class="nav-btn-icon">🧪</span>
+      <span class="nav-btn-label">Probando 1, 2, 3</span>
+      <span class="nav-state" id="state-e3s2"></span>
+    </button>
+    <button class="nav-btn" id="nav-e3s3" onclick="UI.showPage('e3s3')">
+      <span class="nav-btn-icon">➕➖</span>
+      <span class="nav-btn-label">Ideas + / −</span>
+      <span class="nav-state" id="state-e3s3"></span>
+    </button>
+
+  </nav><!-- /nav -->
+
+  <div class="sidebar-actions">
+    <button class="btn-action primary" onclick="Storage.save()">
+      💾 Guardar avance
+    </button>
+    <button class="btn-action success" onclick="PDF.generate()">
+      📄 Memoria técnica PDF
+    </button>
+    <button class="btn-action" onclick="Storage.triggerLoad()">
+      📂 Cargar proyecto
+    </button>
+    <button class="btn-action danger-outline" onclick="Storage.confirmReset()">
+      🔄 Reiniciar proyecto
+    </button>
+    <input type="file" id="loadInput" accept=".json" style="display:none"
+           onchange="Storage.load(event)">
+
+    <!-- Indicador de autoguardado -->
+    <div class="autosave-bar">
+      <div class="autosave-dot" id="autosaveDot"></div>
+      <span id="autosaveLabel">Autoguardado activo</span>
+    </div>
+  </div>
+
+</aside><!-- /sidebar -->
+
+<!-- ═══════════════════════════════════
+     TOPBAR MOBILE
+═══════════════════════════════════ -->
+<div class="topbar">
+  <button class="topbar-menu" onclick="UI.toggleSidebar()">☰</button>
+  <h2>Bitácora ABT · UTU</h2>
+</div>
+
+<!-- ═══════════════════════════════════
+     CONTENIDO PRINCIPAL
+═══════════════════════════════════ -->
+<main class="main">
+
+  <!-- Portada para impresión (oculta en pantalla) -->
+  <div class="print-only print-cover" id="printCover">
+    <h1 id="printTitle">Mi Proyecto ABT</h1>
+    <div class="print-subtitle">Memoria Técnica · Aprendizaje Basado en el Trabajo · UTU</div>
+    <div class="print-meta-grid">
+      <div class="print-meta-item">
+        <div class="print-meta-label">Integrantes</div>
+        <div class="print-meta-value" id="printIntegrantes">—</div>
+      </div>
+      <div class="print-meta-item">
+        <div class="print-meta-label">Grado</div>
+        <div class="print-meta-value" id="printGrado">—</div>
+      </div>
+      <div class="print-meta-item">
+        <div class="print-meta-label">Centro educativo</div>
+        <div class="print-meta-value" id="printCentro">—</div>
+      </div>
+      <div class="print-meta-item">
+        <div class="print-meta-label">Fecha de inicio</div>
+        <div class="print-meta-value" id="printFecha">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ENCABEZADO DEL PROYECTO ── -->
+  <div class="project-header">
+    <input class="project-name-input" id="proj-nombre" type="text"
+      placeholder="✏️  Nombre del proyecto..." oninput="App.onChange()">
+    <div class="project-meta-grid">
+      <div class="meta-field">
+        <label for="proj-integrantes">👥 Integrantes</label>
+        <input class="meta-input" id="proj-integrantes" type="text"
+          placeholder="Nombre, Nombre..." oninput="App.onChange()">
+      </div>
+      <div class="meta-field">
+        <label for="proj-grado">🎓 Grado</label>
+        <input class="meta-input" id="proj-grado" type="text"
+          placeholder="1° Año EBI..." oninput="App.onChange()">
+      </div>
+      <div class="meta-field">
+        <label for="proj-centro">🏫 Centro educativo</label>
+        <input class="meta-input" id="proj-centro" type="text"
+          placeholder="Nombre del centro..." oninput="App.onChange()">
+      </div>
+      <div class="meta-field">
+        <label for="proj-fecha">📅 Fecha inicio</label>
+        <input class="meta-input" id="proj-fecha" type="date" oninput="App.onChange()">
+      </div>
+    </div>
+  </div>
+
+  <!-- ── BARRA DE PROGRESO ── -->
+  <div class="progress-card">
+    <div class="progress-header">
+      <span>Progreso general del proyecto</span>
+      <span class="progress-pct" id="progPct">0%</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progFill"></div>
+    </div>
+    <div class="progress-stages">
+      <div class="stage-pill" id="pill-e1">
+        🟡 Etapa 1 · Explorar
+        <span id="pill-e1-detail">Sin iniciar</span>
+      </div>
+      <div class="stage-pill" id="pill-e2">
+        🔵 Etapa 2 · Definir
+        <span id="pill-e2-detail">Sin iniciar</span>
+      </div>
+      <div class="stage-pill" id="pill-e3">
+        🟢 Etapa 3 · Crear
+        <span id="pill-e3-detail">Sin iniciar</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       PÁGINA: DASHBOARD
+  ══════════════════════════════════════════ -->
+  <div class="page active" id="page-dashboard">
+
+    <div class="welcome-hero">
+      <h2>👋 ¡Bienvenidos a su bitácora digital!</h2>
+      <p>Esta herramienta los acompaña en todo el proceso del proyecto según el modelo ABT de UTU. Registren cada etapa, suban fotos de sus procesos y al final generen su memoria técnica completa en PDF — todo sin necesitar internet.</p>
+      <div class="steps-grid">
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <strong>Completen el encabezado</strong>
+            <span>Nombre del proyecto, integrantes y datos del grupo arriba.</span>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <strong>Naveguen por etapas</strong>
+            <span>Usen el menú lateral para completar cada sección.</span>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <strong>Guarden y exporten</strong>
+            <span>Descarguen el JSON para retomar otro día o el PDF al terminar.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-cards">
+      <div class="dash-card e1" onclick="UI.showPage('e1s1')">
+        <div class="dash-card-icon">🟡</div>
+        <div class="dash-card-title">Etapa 1 · Explorar y Comprender</div>
+        <div class="dash-card-desc">Cartografía, mapa persona, revisión de textos y cierre de etapa.</div>
+        <div class="dash-card-stat" id="dash-stat-1">0 / 4 secciones</div>
+      </div>
+      <div class="dash-card e2" onclick="UI.showPage('e2s1')">
+        <div class="dash-card-icon">🔵</div>
+        <div class="dash-card-title">Etapa 2 · Definir el Problema</div>
+        <div class="dash-card-desc">Ecualizador, árbol de problemas, pregunta guía, rombo y cierre.</div>
+        <div class="dash-card-stat" id="dash-stat-2">0 / 5 secciones</div>
+      </div>
+      <div class="dash-card e3" onclick="UI.showPage('e3s1')">
+        <div class="dash-card-icon">🟢</div>
+        <div class="dash-card-title">Etapa 3 · Crear y Probar</div>
+        <div class="dash-card-desc">Ideas Van!, prototipado, testeo e iteración y mejora.</div>
+        <div class="dash-card-stat" id="dash-stat-3">0 / 3 secciones</div>
+      </div>
+    </div>
+
+  </div><!-- /dashboard -->
+
+  <!-- ══════════════════════════════════════════
+       ETAPA 1: EXPLORAR Y COMPRENDER
+  ══════════════════════════════════════════ -->
+
+  <!-- E1S1: Cartografía colectiva -->
+  <div class="page" id="page-e1s1">
+    <div class="stage-header">
+      <div class="stage-icon e1">🗺️</div>
+      <div class="stage-title">
+        <h2>Cartografía colectiva</h2>
+        <p>Etapa 1 · Explorar y Comprender · Sección 1 de 4</p>
+      </div>
+    </div>
+
+    <div class="section-card" id="card-e1s1">
+      <div class="section-card-header open" onclick="UI.toggleCard(this)">
+        <span class="sec-icon">🗺️</span>
+        <div class="sec-info">
+          <div class="sec-title">Cartografía / Mapa colectivo</div>
+          <div class="sec-desc">Mapeamos el contexto, el territorio y las personas involucradas</div>
+        </div>
+        <span class="sec-state-badge" id="badge-e1s1">Sin iniciar</span>
+        <span class="sec-toggle open">⌄</span>
+      </div>
+      <div class="section-card-body open">
+
+        <div class="pedagogical-scaffold">
+          <div class="scaffold-item consigna">
+            <div class="scaffold-icon">✏️</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Consigna</div>
+              <div class="scaffold-text">Elaboren un mapa del contexto donde surge el problema. Identifiquen <strong>el lugar, las personas involucradas y sus relaciones</strong>. Pueden dibujar el mapa en papel y luego fotografiarlo para subirlo aquí.</div>
+            </div>
+          </div>
+          <div class="scaffold-item ejemplo">
+            <div class="scaffold-icon">💡</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Ejemplo orientador</div>
+              <div class="scaffold-text"><em>"Mapeamos el barrio Cerro Norte: identificamos la plaza como punto de encuentro, la escuela, el centro de salud. Las personas principales son niños de 6 a 12 años que van a la plaza pero no tienen juegos adecuados…"</em></div>
+            </div>
+          </div>
+          <div class="scaffold-item logro">
+            <div class="scaffold-icon">🎯</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Indicador de logro</div>
+              <div class="scaffold-text">Al terminar esta sección deben poder responder: <strong>¿Dónde ocurre el problema? ¿Quiénes están involucrados? ¿Cómo se relacionan entre sí?</strong></div>
+            </div>
+          </div>
+          <div class="scaffold-item docente teacher-only">
+            <div class="scaffold-icon">🎓</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Nota docente</div>
+              <div class="scaffold-text">Sugerencia: que los equipos salgan a observar el espacio físico o usen Google Maps como referencia. Tiempo sugerido: 30-45 minutos. Valorar que el mapa incluya personas, no solo lugares.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">📝 Descripción del mapa y hallazgos <span class="field-required">*</span></div>
+          <textarea class="field-textarea" id="e1s1-desc" rows="5"
+            placeholder="Describan lo que observaron: el lugar, las personas que encontraron, las relaciones entre ellas, qué descubrieron sobre el contexto del problema..."
+            oninput="App.onChange()"></textarea>
+          <div class="char-counter" id="cc-e1s1-desc">0 caracteres</div>
+          <div class="validation-msg" id="val-e1s1-desc">⚠️ Este campo es necesario para continuar</div>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">🖼️ Imágenes del mapa (foto del mapa dibujado, del lugar, etc.)</div>
+          <div class="img-upload-zone" id="zone-e1s1">
+            <input type="file" accept="image/*" multiple onchange="Img.handle(event,'e1s1')">
+            <div class="upload-icon">📷</div>
+            <div class="upload-text">Tocá aquí para subir imágenes</div>
+            <div class="upload-hint">JPG · PNG · WEBP · Podés subir varias a la vez</div>
+          </div>
+          <div class="img-grid" id="grid-e1s1"></div>
+        </div>
+
+        <div class="teacher-obs-wrap">
+          <div class="teacher-obs-label">🎓 Observaciones del docente</div>
+          <textarea class="teacher-obs-textarea" id="obs-e1s1" rows="2"
+            placeholder="Anotá tus observaciones sobre el trabajo de este grupo en esta sección..."
+            oninput="App.onChange()"></textarea>
+        </div>
+
+        <div class="section-footer">
+          <div class="section-footer-left">
+            <button class="btn-sm danger" onclick="UI.confirmClear('e1s1')">🗑 Limpiar sección</button>
+          </div>
+          <button class="btn-sm" onclick="UI.showPage('e1s2')">Siguiente sección →</button>
+        </div>
+      </div>
+    </div>
+  </div><!-- /e1s1 -->
+
+  <!-- E1S2: Mapa persona -->
+  <div class="page" id="page-e1s2">
+    <div class="stage-header">
+      <div class="stage-icon e1">👤</div>
+      <div class="stage-title">
+        <h2>Mapa persona</h2>
+        <p>Etapa 1 · Explorar y Comprender · Sección 2 de 4</p>
+      </div>
+    </div>
+
+    <div class="section-card" id="card-e1s2">
+      <div class="section-card-header open" onclick="UI.toggleCard(this)">
+        <span class="sec-icon">👤</span>
+        <div class="sec-info">
+          <div class="sec-title">Mapa persona (Usuario / Destinatario)</div>
+          <div class="sec-desc">¿Para quién diseñamos? ¿Qué necesita esa persona?</div>
+        </div>
+        <span class="sec-state-badge" id="badge-e1s2">Sin iniciar</span>
+        <span class="sec-toggle open">⌄</span>
+      </div>
+      <div class="section-card-body open">
+
+        <div class="pedagogical-scaffold">
+          <div class="scaffold-item consigna">
+            <div class="scaffold-icon">✏️</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Consigna</div>
+              <div class="scaffold-text">Elijan <strong>una persona representativa</strong> del grupo al que quieren ayudar. Descríbanla con detalle: ¿qué piensa? ¿qué siente? ¿qué necesita? ¿qué barreras enfrenta? Pueden basarse en entrevistas o en observación directa.</div>
+            </div>
+          </div>
+          <div class="scaffold-item ejemplo">
+            <div class="scaffold-icon">💡</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Ejemplo orientador</div>
+              <div class="scaffold-text"><em>"Sofía, 8 años. Va a la plaza todos los días después de clases. Siente que los juegos están rotos y tiene miedo de lastimarse. Necesita un lugar seguro para jugar. Su mayor problema es que sus padres no la dejan salir sola porque la plaza no es segura…"</em></div>
+            </div>
+          </div>
+          <div class="scaffold-item logro">
+            <div class="scaffold-icon">🎯</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Indicador de logro</div>
+              <div class="scaffold-text">Deben poder presentar a "su persona" y responder: <strong>¿Qué la frustra? ¿Qué espera? ¿Qué necesita para estar mejor?</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">👤 ¿Quién es la persona? (nombre ficticio, edad, contexto) <span class="field-required">*</span></div>
+          <textarea class="field-textarea" id="e1s2-quien" rows="3"
+            placeholder="Nombre (puede ser inventado), edad aproximada, dónde vive, qué hace, su rutina..."
+            oninput="App.onChange()"></textarea>
+        </div>
+        <div class="field-group">
+          <div class="field-label">💭 ¿Qué piensa y siente?</div>
+          <textarea class="field-textarea" id="e1s2-siente" rows="3"
+            placeholder="Sus preocupaciones, miedos, esperanzas, valores, qué le importa en su vida..."
+            oninput="App.onChange()"></textarea>
+        </div>
+        <div class="field-group">
+          <div class="field-label">🚧 ¿Qué necesita? ¿Qué barreras enfrenta? <span class="field-required">*</span></div>
+          <textarea class="field-textarea" id="e1s2-necesita" rows="3"
+            placeholder="Sus necesidades concretas, frustraciones, obstáculos que encuentra en su vida cotidiana..."
+            oninput="App.onChange()"></textarea>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">🖼️ Imágenes de referencia (mapa persona dibujado, foto, etc.)</div>
+          <div class="img-upload-zone">
+            <input type="file" accept="image/*" multiple onchange="Img.handle(event,'e1s2')">
+            <div class="upload-icon">📷</div>
+            <div class="upload-text">Tocá aquí para subir imágenes</div>
+            <div class="upload-hint">JPG · PNG · WEBP</div>
+          </div>
+          <div class="img-grid" id="grid-e1s2"></div>
+        </div>
+
+        <div class="teacher-obs-wrap">
+          <div class="teacher-obs-label">🎓 Observaciones del docente</div>
+          <textarea class="teacher-obs-textarea" id="obs-e1s2" rows="2"
+            placeholder="Observaciones sobre el mapa persona de este grupo..."
+            oninput="App.onChange()"></textarea>
+        </div>
+
+        <div class="section-footer">
+          <div class="section-footer-left">
+            <button class="btn-sm danger" onclick="UI.confirmClear('e1s2')">🗑 Limpiar sección</button>
+          </div>
+          <button class="btn-sm" onclick="UI.showPage('e1s1')">← Anterior</button>
+          <button class="btn-sm" onclick="UI.showPage('e1s3')">Siguiente →</button>
+        </div>
+      </div>
+    </div>
+  </div><!-- /e1s2 -->
+
+  <!-- E1S3: Revisión de textos -->
+  <div class="page" id="page-e1s3">
+    <div class="stage-header">
+      <div class="stage-icon e1">📚</div>
+      <div class="stage-title">
+        <h2>Revisión de textos</h2>
+        <p>Etapa 1 · Explorar y Comprender · Sección 3 de 4</p>
+      </div>
+    </div>
+
+    <div class="section-card" id="card-e1s3">
+      <div class="section-card-header open" onclick="UI.toggleCard(this)">
+        <span class="sec-icon">📚</span>
+        <div class="sec-info">
+          <div class="sec-title">Revisión de textos e investigación</div>
+          <div class="sec-desc">¿Qué investigaron? ¿Qué aprendieron sobre el tema?</div>
+        </div>
+        <span class="sec-state-badge" id="badge-e1s3">Sin iniciar</span>
+        <span class="sec-toggle open">⌄</span>
+      </div>
+      <div class="section-card-body open">
+
+        <div class="pedagogical-scaffold">
+          <div class="scaffold-item consigna">
+            <div class="scaffold-icon">✏️</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Consigna</div>
+              <div class="scaffold-text">Investiguen el problema: busquen artículos, noticias, videos, datos estadísticos o entrevisten a personas expertas. <strong>No copien y peguen</strong>: escriban con sus propias palabras qué encontraron y cómo se relaciona con su proyecto.</div>
+            </div>
+          </div>
+          <div class="scaffold-item ejemplo">
+            <div class="scaffold-icon">💡</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Ejemplo orientador</div>
+              <div class="scaffold-text"><em>"Leímos un artículo de El País que dice que en Uruguay el 40% de los parques públicos no tiene mantenimiento adecuado. También entrevistamos a la encargada de la Junta Local que nos explicó que el presupuesto para espacios verdes bajó un 30% en 3 años…"</em></div>
+            </div>
+          </div>
+          <div class="scaffold-item logro">
+            <div class="scaffold-icon">🎯</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Indicador de logro</div>
+              <div class="scaffold-text">Deben tener al menos <strong>2 fuentes consultadas</strong> y poder explicar qué datos o información encontraron que ayuda a entender mejor el problema.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">📖 Fuentes consultadas (artículos, videos, entrevistas...) <span class="field-required">*</span></div>
+          <textarea class="field-textarea" id="e1s3-fuentes" rows="4"
+            placeholder="Nombren cada fuente: título o descripción, dónde la encontraron (sitio web, biblioteca, entrevista a quién)..."
+            oninput="App.onChange()"></textarea>
+        </div>
+        <div class="field-group">
+          <div class="field-label">💡 ¿Qué aprendieron? Principales ideas y datos <span class="field-required">*</span></div>
+          <textarea class="field-textarea" id="e1s3-aprend" rows="4"
+            placeholder="Escriban con sus palabras los datos más importantes que encontraron. ¿Qué números, hechos o ideas les llamaron la atención?"
+            oninput="App.onChange()"></textarea>
+        </div>
+        <div class="field-group">
+          <div class="field-label">🔗 ¿Cómo se relaciona con su proyecto?</div>
+          <textarea class="field-textarea" id="e1s3-relacion" rows="3"
+            placeholder="¿Cómo esta información ayuda a entender mejor el problema que quieren resolver?"
+            oninput="App.onChange()"></textarea>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">🖼️ Capturas, fotos de apuntes, registros de entrevistas</div>
+          <div class="img-upload-zone">
+            <input type="file" accept="image/*" multiple onchange="Img.handle(event,'e1s3')">
+            <div class="upload-icon">📷</div>
+            <div class="upload-text">Tocá aquí para subir imágenes</div>
+            <div class="upload-hint">JPG · PNG · WEBP</div>
+          </div>
+          <div class="img-grid" id="grid-e1s3"></div>
+        </div>
+
+        <div class="teacher-obs-wrap">
+          <div class="teacher-obs-label">🎓 Observaciones del docente</div>
+          <textarea class="teacher-obs-textarea" id="obs-e1s3" rows="2"
+            placeholder="Observaciones sobre la investigación de este grupo..." oninput="App.onChange()"></textarea>
+        </div>
+
+        <div class="section-footer">
+          <div class="section-footer-left">
+            <button class="btn-sm danger" onclick="UI.confirmClear('e1s3')">🗑 Limpiar sección</button>
+          </div>
+          <button class="btn-sm" onclick="UI.showPage('e1s2')">← Anterior</button>
+          <button class="btn-sm" onclick="UI.showPage('e1s4')">Siguiente →</button>
+        </div>
+      </div>
+    </div>
+  </div><!-- /e1s3 -->
+
+  <!-- E1S4: Cierre etapa 1 -->
+  <div class="page" id="page-e1s4">
+    <div class="stage-header">
+      <div class="stage-icon e1">✅</div>
+      <div class="stage-title">
+        <h2>Cierre de Etapa 1</h2>
+        <p>Etapa 1 · Explorar y Comprender · Sección 4 de 4</p>
+      </div>
+    </div>
+
+    <div class="section-card" id="card-e1s4">
+      <div class="section-card-header open" onclick="UI.toggleCard(this)">
+        <span class="sec-icon">✅</span>
+        <div class="sec-info">
+          <div class="sec-title">Reflexión y cierre de la Etapa 1</div>
+          <div class="sec-desc">¿Qué aprendimos? ¿Con qué vamos a la Etapa 2?</div>
+        </div>
+        <span class="sec-state-badge" id="badge-e1s4">Sin iniciar</span>
+        <span class="sec-toggle open">⌄</span>
+      </div>
+      <div class="section-card-body open">
+
+        <div class="pedagogical-scaffold">
+          <div class="scaffold-item consigna">
+            <div class="scaffold-icon">✏️</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Consigna</div>
+              <div class="scaffold-text">Como equipo, reflexionen sobre todo lo que hicieron en esta etapa. ¿Qué fue lo más importante que descubrieron? ¿Qué cambiarían? ¿Con qué intuición o hipótesis van a la siguiente etapa?</div>
+            </div>
+          </div>
+          <div class="scaffold-item logro">
+            <div class="scaffold-icon">🎯</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Indicador de logro</div>
+              <div class="scaffold-text">Deben poder sintetizar los <strong>3 hallazgos más importantes</strong> de la exploración y tener una idea preliminar de cuál podría ser el problema central a abordar.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">🌟 Principales hallazgos de la exploración <span class="field-required">*</span></div>
+          <textarea class="field-textarea" id="e1s4-hallazgos" rows="4"
+            placeholder="Los 3 descubrimientos más importantes que hicieron durante esta etapa de exploración..."
+            oninput="App.onChange()"></textarea>
+        </div>
+        <div class="field-group">
+          <div class="field-label">🔄 ¿Qué cambiarían si volvieran a empezar?</div>
+          <textarea class="field-textarea" id="e1s4-cambios" rows="3"
+            placeholder="¿Qué harían diferente? ¿Qué aprendieron del proceso del equipo?"
+            oninput="App.onChange()"></textarea>
+        </div>
+        <div class="field-group">
+          <div class="field-label">➡️ ¿Con qué intuición / hipótesis van a la Etapa 2? <span class="field-required">*</span></div>
+          <textarea class="field-textarea" id="e1s4-siguiente" rows="3"
+            placeholder="La idea o hipótesis inicial sobre cuál podría ser el problema central que quieren resolver..."
+            oninput="App.onChange()"></textarea>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">🖼️ Imágenes del cierre (plenario, cartelera, foto del equipo)</div>
+          <div class="img-upload-zone">
+            <input type="file" accept="image/*" multiple onchange="Img.handle(event,'e1s4')">
+            <div class="upload-icon">📷</div>
+            <div class="upload-text">Tocá aquí para subir imágenes</div>
+            <div class="upload-hint">JPG · PNG · WEBP</div>
+          </div>
+          <div class="img-grid" id="grid-e1s4"></div>
+        </div>
+
+        <div class="teacher-obs-wrap">
+          <div class="teacher-obs-label">🎓 Evaluación del docente — Etapa 1</div>
+          <textarea class="teacher-obs-textarea" id="obs-e1s4" rows="3"
+            placeholder="Valoración general de la Etapa 1 del grupo. ¿Logró los objetivos de exploración? ¿Qué aspectos reforzar?" oninput="App.onChange()"></textarea>
+        </div>
+
+        <div class="section-footer">
+          <div class="section-footer-left">
+            <button class="btn-sm danger" onclick="UI.confirmClear('e1s4')">🗑 Limpiar sección</button>
+          </div>
+          <button class="btn-sm" onclick="UI.showPage('e1s3')">← Anterior</button>
+          <button class="btn-sm" onclick="UI.showPage('e2s1')">Ir a Etapa 2 →</button>
+        </div>
+      </div>
+    </div>
+  </div><!-- /e1s4 -->
+
+  <!-- ══════════════════════════════════════════
+       ETAPA 2: DEFINIR EL PROBLEMA
+  ══════════════════════════════════════════ -->
+
+  <!-- E2S1: Ecualizador -->
+  <div class="page" id="page-e2s1">
+    <div class="stage-header">
+      <div class="stage-icon e2">⚖️</div>
+      <div class="stage-title">
+        <h2>Ecualizador de oportunidades</h2>
+        <p>Etapa 2 · Definir el Problema · Sección 1 de 5</p>
+      </div>
+    </div>
+
+    <div class="section-card" id="card-e2s1">
+      <div class="section-card-header open" onclick="UI.toggleCard(this)">
+        <span class="sec-icon">⚖️</span>
+        <div class="sec-info">
+          <div class="sec-title">Ecualizador de oportunidades</div>
+          <div class="sec-desc">¿Qué factores suman (+) y cuáles restan (−) en este contexto?</div>
+        </div>
+        <span class="sec-state-badge" id="badge-e2s1">Sin iniciar</span>
+        <span class="sec-toggle open">⌄</span>
+      </div>
+      <div class="section-card-body open">
+
+        <div class="pedagogical-scaffold">
+          <div class="scaffold-item consigna">
+            <div class="scaffold-icon">✏️</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Consigna</div>
+              <div class="scaffold-text">Analicen el contexto usando el ecualizador: ¿qué <strong>recursos y fortalezas</strong> existen en el entorno? ¿Qué <strong>barreras y carencias</strong> generan desigualdad o dificultan el acceso? La tensión entre estos factores revela dónde pueden intervenir.</div>
+            </div>
+          </div>
+          <div class="scaffold-item ejemplo">
+            <div class="scaffold-icon">💡</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Ejemplo orientador</div>
+              <div class="scaffold-text"><em>"(+) La comunidad tiene vecinos organizados y la plaza tiene espacio libre. (−) No hay presupuesto municipal para mantenimiento, los juegos están rotos desde hace 2 años y nadie los repara. La oportunidad: una solución comunitaria de bajo costo…"</em></div>
+            </div>
+          </div>
+          <div class="scaffold-item logro">
+            <div class="scaffold-icon">🎯</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Indicador de logro</div>
+              <div class="scaffold-text">Deben identificar al menos <strong>3 factores positivos y 3 negativos</strong>, y señalar claramente dónde se encuentra la principal oportunidad de mejora.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">🟢 Factores positivos — recursos, fortalezas, oportunidades <span class="field-required">*</span></div>
+          <textarea class="field-textarea" id="e2s1-pos" rows="4"
+            placeholder="¿Qué recursos hay disponibles? ¿Qué funciona bien? ¿Qué oportunidades existen en el contexto?"
+            oninput="App.onChange()"></textarea>
+        </div>
+        <div class="field-group">
+          <div class="field-label">🔴 Factores negativos — obstáculos, brechas, carencias <span class="field-required">*</span></div>
+          <textarea class="field-textarea" id="e2s1-neg" rows="4"
+            placeholder="¿Qué barreras hay? ¿Qué falta? ¿Qué cosas generan desigualdad o dificultan el acceso?"
+            oninput="App.onChange()"></textarea>
+        </div>
+        <div class="field-group">
+          <div class="field-label">🎯 ¿Dónde está la oportunidad de mejora?</div>
+          <textarea class="field-textarea" id="e2s1-oport" rows="3"
+            placeholder="Analizando los factores anteriores, ¿dónde pueden intervenir con su proyecto para generar más igualdad de oportunidades?"
+            oninput="App.onChange()"></textarea>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">🖼️ Imágenes (ecualizador dibujado, esquemas)</div>
+          <div class="img-upload-zone">
+            <input type="file" accept="image/*" multiple onchange="Img.handle(event,'e2s1')">
+            <div class="upload-icon">📷</div>
+            <div class="upload-text">Tocá aquí para subir imágenes</div>
+            <div class="upload-hint">JPG · PNG · WEBP</div>
+          </div>
+          <div class="img-grid" id="grid-e2s1"></div>
+        </div>
+
+        <div class="teacher-obs-wrap">
+          <div class="teacher-obs-label">🎓 Observaciones del docente</div>
+          <textarea class="teacher-obs-textarea" id="obs-e2s1" rows="2"
+            placeholder="Observaciones sobre el ecualizador..." oninput="App.onChange()"></textarea>
+        </div>
+
+        <div class="section-footer">
+          <div class="section-footer-left">
+            <button class="btn-sm danger" onclick="UI.confirmClear('e2s1')">🗑 Limpiar sección</button>
+          </div>
+          <button class="btn-sm" onclick="UI.showPage('e1s4')">← Anterior</button>
+          <button class="btn-sm" onclick="UI.showPage('e2s2')">Siguiente →</button>
+        </div>
+      </div>
+    </div>
+  </div><!-- /e2s1 -->
+
+  <!-- E2S2: Árbol de problemas -->
+  <div class="page" id="page-e2s2">
+    <div class="stage-header">
+      <div class="stage-icon e2">🌳</div>
+      <div class="stage-title">
+        <h2>Árbol de problemas</h2>
+        <p>Etapa 2 · Definir el Problema · Sección 2 de 5</p>
+      </div>
+    </div>
+
+    <div class="section-card" id="card-e2s2">
+      <div class="section-card-header open" onclick="UI.toggleCard(this)">
+        <span class="sec-icon">🌳</span>
+        <div class="sec-info">
+          <div class="sec-title">Árbol de problemas</div>
+          <div class="sec-desc">Causas (raíces), problema central (tronco) y consecuencias (ramas)</div>
+        </div>
+        <span class="sec-state-badge" id="badge-e2s2">Sin iniciar</span>
+        <span class="sec-toggle open">⌄</span>
+      </div>
+      <div class="section-card-body open">
+
+        <div class="pedagogical-scaffold">
+          <div class="scaffold-item consigna">
+            <div class="scaffold-icon">✏️</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Consigna</div>
+              <div class="scaffold-text">Construyan el árbol del problema. Las <strong>raíces son las causas</strong> (¿por qué pasa esto?), el <strong>tronco es el problema central</strong> (lo que quieren resolver), y las <strong>ramas son las consecuencias</strong> (qué pasa si no se soluciona). Pueden dibujarlo en papel y fotografiarlo.</div>
+            </div>
+          </div>
+          <div class="scaffold-item ejemplo">
+            <div class="scaffold-icon">💡</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Ejemplo orientador</div>
+              <div class="scaffold-text"><em>"Raíces: falta de presupuesto + ausencia de políticas de mantenimiento. Tronco: la plaza del barrio está deteriorada y es insegura. Ramas: los niños no tienen espacio seguro de juego + los vecinos dejan de usar el espacio público + aumenta el sedentarismo infantil…"</em></div>
+            </div>
+          </div>
+          <div class="scaffold-item logro">
+            <div class="scaffold-icon">🎯</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Indicador de logro</div>
+              <div class="scaffold-text">El problema central debe estar redactado de forma <strong>clara y específica</strong>. No puede ser ni demasiado amplio ("la pobreza") ni demasiado pequeño ("un juego roto").</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">🌿 Causas — raíces del árbol (¿por qué existe este problema?) <span class="field-required">*</span></div>
+          <textarea class="field-textarea" id="e2s2-causas" rows="4"
+            placeholder="Listá las causas principales. ¿Qué genera el problema? ¿Por qué ocurre?"
+            oninput="App.onChange()"></textarea>
+        </div>
+        <div class="field-group">
+          <div class="field-label">🌳 Problema central — tronco (una oración clara y específica) <span class="field-required">*</span></div>
+          <textarea class="field-textarea" id="e2s2-problema" rows="2"
+            placeholder="El problema central es: ..."
+            oninput="App.onChange()"></textarea>
+        </div>
+        <div class="field-group">
+          <div class="field-label">🌸 Consecuencias — ramas (¿qué pasa si no se resuelve?) <span class="field-required">*</span></div>
+          <textarea class="field-textarea" id="e2s2-consecu" rows="4"
+            placeholder="¿Qué efectos tiene este problema? ¿A quién afecta y cómo?"
+            oninput="App.onChange()"></textarea>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">🖼️ Imágenes (árbol dibujado, esquema, foto de la actividad)</div>
+          <div class="img-upload-zone">
+            <input type="file" accept="image/*" multiple onchange="Img.handle(event,'e2s2')">
+            <div class="upload-icon">📷</div>
+            <div class="upload-text">Tocá aquí para subir imágenes</div>
+            <div class="upload-hint">JPG · PNG · WEBP</div>
+          </div>
+          <div class="img-grid" id="grid-e2s2"></div>
+        </div>
+
+        <div class="teacher-obs-wrap">
+          <div class="teacher-obs-label">🎓 Observaciones del docente</div>
+          <textarea class="teacher-obs-textarea" id="obs-e2s2" rows="2"
+            placeholder="¿El árbol está bien construido? ¿El problema central es adecuado?" oninput="App.onChange()"></textarea>
+        </div>
+
+        <div class="section-footer">
+          <div class="section-footer-left">
+            <button class="btn-sm danger" onclick="UI.confirmClear('e2s2')">🗑 Limpiar sección</button>
+          </div>
+          <button class="btn-sm" onclick="UI.showPage('e2s1')">← Anterior</button>
+          <button class="btn-sm" onclick="UI.showPage('e2s3')">Siguiente →</button>
+        </div>
+      </div>
+    </div>
+  </div><!-- /e2s2 -->
+
+  <!-- E2S3: Pregunta guía -->
+  <div class="page" id="page-e2s3">
+    <div class="stage-header">
+      <div class="stage-icon e2">❓</div>
+      <div class="stage-title">
+        <h2>Pregunta guía</h2>
+        <p>Etapa 2 · Definir el Problema · Sección 3 de 5</p>
+      </div>
+    </div>
+
+    <div class="section-card" id="card-e2s3">
+      <div class="section-card-header open" onclick="UI.toggleCard(this)">
+        <span class="sec-icon">❓</span>
+        <div class="sec-info">
+          <div class="sec-title">Pregunta guía del proyecto</div>
+          <div class="sec-desc">La pregunta que orienta toda la propuesta de solución</div>
+        </div>
+        <span class="sec-state-badge" id="badge-e2s3">Sin iniciar</span>
+        <span class="sec-toggle open">⌄</span>
+      </div>
+      <div class="section-card-body open">
+
+        <div class="pedagogical-scaffold">
+          <div class="scaffold-item consigna">
+            <div class="scaffold-icon">✏️</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Consigna</div>
+              <div class="scaffold-text">Construyan la pregunta guía del proyecto. Debe comenzar con <strong>"¿Cómo podríamos...?"</strong> y debe ser lo suficientemente específica para guiar las soluciones, pero lo suficientemente abierta para tener múltiples respuestas posibles. Muestren el proceso: escriban versiones anteriores y expliquen cómo la fueron mejorando.</div>
+            </div>
+          </div>
+          <div class="scaffold-item ejemplo">
+            <div class="scaffold-icon">💡</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Ejemplo orientador</div>
+              <div class="scaffold-text">
+                <em>Versión 1: "¿Cómo podríamos arreglar la plaza?" (muy vaga)</em><br>
+                <em>Versión 2: "¿Cómo podríamos mejorar los juegos de la plaza?" (más específica)</em><br>
+                <em>Final: "¿Cómo podríamos crear un espacio de juego seguro y accesible en la plaza Cerro Norte, con recursos de la propia comunidad?" ✓</em>
+              </div>
+            </div>
+          </div>
+          <div class="scaffold-item logro">
+            <div class="scaffold-icon">🎯</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Indicador de logro</div>
+              <div class="scaffold-text">La pregunta guía final debe: <strong>(1)</strong> empezar con "¿Cómo podríamos...?", <strong>(2)</strong> mencionar a quién beneficia, <strong>(3)</strong> indicar el contexto específico del problema.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">❓ Nuestra pregunta guía final <span class="field-required">*</span></div>
+          <textarea class="field-textarea" id="e2s3-pregunta" rows="2"
+            style="font-size:16px; font-weight:600;"
+            placeholder="¿Cómo podríamos...?"
+            oninput="App.onChange()"></textarea>
+        </div>
+        <div class="field-group">
+          <div class="field-label">🔄 Versiones anteriores de la pregunta (proceso de construcción)</div>
+          <textarea class="field-textarea" id="e2s3-versiones" rows="4"
+            placeholder="Versión 1: ... (problema: ...)&#10;Versión 2: ... (problema: ...)&#10;..."
+            oninput="App.onChange()"></textarea>
+        </div>
+        <div class="field-group">
+          <div class="field-label">✅ ¿Por qué eligieron esta pregunta final? <span class="field-required">*</span></div>
+          <textarea class="field-textarea" id="e2s3-justif" rows="3"
+            placeholder="¿Por qué esta versión es mejor que las anteriores? ¿Qué criterios usaron para decidir?"
+            oninput="App.onChange()"></textarea>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">🖼️ Imágenes (post-its con preguntas, pizarrón, foto del proceso)</div>
+          <div class="img-upload-zone">
+            <input type="file" accept="image/*" multiple onchange="Img.handle(event,'e2s3')">
+            <div class="upload-icon">📷</div>
+            <div class="upload-text">Tocá aquí para subir imágenes</div>
+            <div class="upload-hint">JPG · PNG · WEBP</div>
+          </div>
+          <div class="img-grid" id="grid-e2s3"></div>
+        </div>
+
+        <div class="teacher-obs-wrap">
+          <div class="teacher-obs-label">🎓 Observaciones del docente</div>
+          <textarea class="teacher-obs-textarea" id="obs-e2s3" rows="2"
+            placeholder="¿La pregunta guía es adecuada? ¿Qué ajustes sugerirías?" oninput="App.onChange()"></textarea>
+        </div>
+
+        <div class="section-footer">
+          <div class="section-footer-left">
+            <button class="btn-sm danger" onclick="UI.confirmClear('e2s3')">🗑 Limpiar sección</button>
+          </div>
+          <button class="btn-sm" onclick="UI.showPage('e2s2')">← Anterior</button>
+          <button class="btn-sm" onclick="UI.showPage('e2s4')">Siguiente →</button>
+        </div>
+      </div>
+    </div>
+  </div><!-- /e2s3 -->
+
+  <!-- E2S4: Rombo de requisitos -->
+  <div class="page" id="page-e2s4">
+    <div class="stage-header">
+      <div class="stage-icon e2">💎</div>
+      <div class="stage-title">
+        <h2>Rombo de requisitos</h2>
+        <p>Etapa 2 · Definir el Problema · Sección 4 de 5</p>
+      </div>
+    </div>
+
+    <div class="section-card" id="card-e2s4">
+      <div class="section-card-header open" onclick="UI.toggleCard(this)">
+        <span class="sec-icon">💎</span>
+        <div class="sec-info">
+          <div class="sec-title">Rombo de requisitos</div>
+          <div class="sec-desc">¿Qué debe (y qué no debe) tener la solución?</div>
+        </div>
+        <span class="sec-state-badge" id="badge-e2s4">Sin iniciar</span>
+        <span class="sec-toggle open">⌄</span>
+      </div>
+      <div class="section-card-body open">
+
+        <div class="pedagogical-scaffold">
+          <div class="scaffold-item consigna">
+            <div class="scaffold-icon">✏️</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Consigna</div>
+              <div class="scaffold-text">Antes de crear soluciones, definan los <strong>requisitos de diseño</strong>. Piensen en: qué necesidades de la persona deben resolver (DEBE), qué restricciones existen (NO DEBE), y qué características harían la solución ideal (SERÍA IDEAL). Esto evita desperdiciar tiempo en soluciones que no van a funcionar.</div>
+            </div>
+          </div>
+          <div class="scaffold-item ejemplo">
+            <div class="scaffold-icon">💡</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Ejemplo orientador</div>
+              <div class="scaffold-text">
+                <em>DEBE: ser seguro para niños, usar materiales disponibles en el barrio, poder construirse en una semana.</em><br>
+                <em>NO DEBE: costar más de $5.000, requerir electricidad, necesitar mantenimiento semanal.</em><br>
+                <em>SERÍA IDEAL: que la comunidad lo pueda construir sola, que sea divertido para varias edades.</em>
+              </div>
+            </div>
+          </div>
+          <div class="scaffold-item logro">
+            <div class="scaffold-icon">🎯</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Indicador de logro</div>
+              <div class="scaffold-text">Al terminar, deben poder usar el rombo para <strong>evaluar si una idea es viable</strong>: "¿Cumple todos los DEBE? ¿Viola algún NO DEBE?"</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">✅ DEBE tener — requisitos indispensables <span class="field-required">*</span></div>
+          <textarea class="field-textarea" id="e2s4-debe" rows="4"
+            placeholder="Características que la solución SÍ o SÍ debe tener. Sin esto, la solución no es válida."
+            oninput="App.onChange()"></textarea>
+        </div>
+        <div class="field-group">
+          <div class="field-label">❌ NO DEBE tener — limitaciones y restricciones <span class="field-required">*</span></div>
+          <textarea class="field-textarea" id="e2s4-nodebe" rows="4"
+            placeholder="Qué no puede incluir la solución (por limitaciones de costo, tiempo, recursos, ética, etc.)"
+            oninput="App.onChange()"></textarea>
+        </div>
+        <div class="field-group">
+          <div class="field-label">⭐ SERÍA IDEAL si tuviera — características deseables</div>
+          <textarea class="field-textarea" id="e2s4-ideal" rows="3"
+            placeholder="Características que sumarían mucho valor pero no son imprescindibles."
+            oninput="App.onChange()"></textarea>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">🖼️ Imágenes (rombo dibujado, post-its, esquema)</div>
+          <div class="img-upload-zone">
+            <input type="file" accept="image/*" multiple onchange="Img.handle(event,'e2s4')">
+            <div class="upload-icon">📷</div>
+            <div class="upload-text">Tocá aquí para subir imágenes</div>
+            <div class="upload-hint">JPG · PNG · WEBP</div>
+          </div>
+          <div class="img-grid" id="grid-e2s4"></div>
+        </div>
+
+        <div class="teacher-obs-wrap">
+          <div class="teacher-obs-label">🎓 Observaciones del docente</div>
+          <textarea class="teacher-obs-textarea" id="obs-e2s4" rows="2"
+            placeholder="¿Los requisitos son realistas y bien definidos?" oninput="App.onChange()"></textarea>
+        </div>
+
+        <div class="section-footer">
+          <div class="section-footer-left">
+            <button class="btn-sm danger" onclick="UI.confirmClear('e2s4')">🗑 Limpiar sección</button>
+          </div>
+          <button class="btn-sm" onclick="UI.showPage('e2s3')">← Anterior</button>
+          <button class="btn-sm" onclick="UI.showPage('e2s5')">Siguiente →</button>
+        </div>
+      </div>
+    </div>
+  </div><!-- /e2s4 -->
+
+  <!-- E2S5: Cierre etapa 2 -->
+  <div class="page" id="page-e2s5">
+    <div class="stage-header">
+      <div class="stage-icon e2">✅</div>
+      <div class="stage-title">
+        <h2>Cierre de Etapa 2</h2>
+        <p>Etapa 2 · Definir el Problema · Sección 5 de 5</p>
+      </div>
+    </div>
+
+    <div class="section-card" id="card-e2s5">
+      <div class="section-card-header open" onclick="UI.toggleCard(this)">
+        <span class="sec-icon">✅</span>
+        <div class="sec-info">
+          <div class="sec-title">Reflexión y cierre de la Etapa 2</div>
+          <div class="sec-desc">Consoliden la definición del problema y lo aprendido</div>
+        </div>
+        <span class="sec-state-badge" id="badge-e2s5">Sin iniciar</span>
+        <span class="sec-toggle open">⌄</span>
+      </div>
+      <div class="section-card-body open">
+
+        <div class="pedagogical-scaffold">
+          <div class="scaffold-item consigna">
+            <div class="scaffold-icon">✏️</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Consigna</div>
+              <div class="scaffold-text">Como equipo: sinteticen la definición final del problema que van a abordar, reflexionen sobre el proceso de esta etapa y prepárense para pasar a crear soluciones.</div>
+            </div>
+          </div>
+          <div class="scaffold-item logro">
+            <div class="scaffold-icon">🎯</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Indicador de logro</div>
+              <div class="scaffold-text">Deben poder presentar en 2-3 oraciones <strong>exactamente cuál es el problema</strong>, <strong>a quién afecta</strong> y <strong>por qué es importante resolverlo</strong>.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">🎯 Definición final del problema (síntesis) <span class="field-required">*</span></div>
+          <textarea class="field-textarea" id="e2s5-defin" rows="4"
+            placeholder="En 2-3 oraciones: ¿Cuál es el problema? ¿A quién afecta? ¿Por qué importa resolverlo?"
+            oninput="App.onChange()"></textarea>
+        </div>
+        <div class="field-group">
+          <div class="field-label">💬 ¿Qué aprendieron en esta etapa?</div>
+          <textarea class="field-textarea" id="e2s5-aprendizaje" rows="3"
+            placeholder="Reflexión del equipo sobre el proceso de definición del problema..."
+            oninput="App.onChange()"></textarea>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">🖼️ Imágenes del cierre de Etapa 2</div>
+          <div class="img-upload-zone">
+            <input type="file" accept="image/*" multiple onchange="Img.handle(event,'e2s5')">
+            <div class="upload-icon">📷</div>
+            <div class="upload-text">Tocá aquí para subir imágenes</div>
+            <div class="upload-hint">JPG · PNG · WEBP</div>
+          </div>
+          <div class="img-grid" id="grid-e2s5"></div>
+        </div>
+
+        <div class="teacher-obs-wrap">
+          <div class="teacher-obs-label">🎓 Evaluación del docente — Etapa 2</div>
+          <textarea class="teacher-obs-textarea" id="obs-e2s5" rows="3"
+            placeholder="Valoración general de la Etapa 2 del grupo. ¿Logró definir el problema adecuadamente?" oninput="App.onChange()"></textarea>
+        </div>
+
+        <div class="section-footer">
+          <div class="section-footer-left">
+            <button class="btn-sm danger" onclick="UI.confirmClear('e2s5')">🗑 Limpiar sección</button>
+          </div>
+          <button class="btn-sm" onclick="UI.showPage('e2s4')">← Anterior</button>
+          <button class="btn-sm" onclick="UI.showPage('e3s1')">Ir a Etapa 3 →</button>
+        </div>
+      </div>
+    </div>
+  </div><!-- /e2s5 -->
+
+  <!-- ══════════════════════════════════════════
+       ETAPA 3: CREAR Y PROBAR
+  ══════════════════════════════════════════ -->
+
+  <!-- E3S1: Ideas Van! -->
+  <div class="page" id="page-e3s1">
+    <div class="stage-header">
+      <div class="stage-icon e3">💡</div>
+      <div class="stage-title">
+        <h2>Ideas Van!</h2>
+        <p>Etapa 3 · Crear y Probar · Sección 1 de 3</p>
+      </div>
+    </div>
+
+    <div class="section-card" id="card-e3s1">
+      <div class="section-card-header open" onclick="UI.toggleCard(this)">
+        <span class="sec-icon">💡</span>
+        <div class="sec-info">
+          <div class="sec-title">Ideas Van! (Ideación)</div>
+          <div class="sec-desc">Generamos la mayor cantidad de ideas sin juzgarlas</div>
+        </div>
+        <span class="sec-state-badge" id="badge-e3s1">Sin iniciar</span>
+        <span class="sec-toggle open">⌄</span>
+      </div>
+      <div class="section-card-body open">
+
+        <div class="pedagogical-scaffold">
+          <div class="scaffold-item consigna">
+            <div class="scaffold-icon">✏️</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Consigna</div>
+              <div class="scaffold-text">Generen la mayor cantidad posible de ideas para responder su pregunta guía. <strong>Reglas de la lluvia de ideas:</strong> (1) No juzgar, toda idea vale; (2) Cantidad antes que calidad; (3) Construir sobre las ideas del otro; (4) Ser visuales: dibujen. Después de la lluvia, seleccionen las más prometedoras.</div>
+            </div>
+          </div>
+          <div class="scaffold-item ejemplo">
+            <div class="scaffold-icon">💡</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Ejemplo orientador</div>
+              <div class="scaffold-text"><em>"Ideas (sin juzgar): 1) juegos con neumáticos reciclados, 2) huerta comunitaria en la plaza, 3) murales en el piso para jugar, 4) sistema de préstamo de pelotas, 5) app para reportar juegos rotos... Elegimos las ideas 1 y 3 porque pueden hacerse con recursos del barrio y sin electricidad."</em></div>
+            </div>
+          </div>
+          <div class="scaffold-item logro">
+            <div class="scaffold-icon">🎯</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Indicador de logro</div>
+              <div class="scaffold-text">Deben tener al menos <strong>8 ideas distintas</strong> en la lluvia, y al menos <strong>2 ideas seleccionadas</strong> con su justificación.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">🌪️ Lluvia de ideas — escriban todas, sin filtrar <span class="field-required">*</span></div>
+          <textarea class="field-textarea" id="e3s1-lluvia" rows="6"
+            placeholder="1) ...&#10;2) ...&#10;3) ...&#10;4) ...&#10;Anoten TODAS las ideas, las obvias y las locas. Sin juzgar."
+            oninput="App.onChange()"></textarea>
+        </div>
+        <div class="field-group">
+          <div class="field-label">⭐ Ideas seleccionadas para desarrollar <span class="field-required">*</span></div>
+          <textarea class="field-textarea" id="e3s1-elegidas" rows="4"
+            placeholder="¿Cuáles son las 2-3 ideas más prometedoras? ¿Por qué las eligieron? ¿Cumplen el rombo de requisitos?"
+            oninput="App.onChange()"></textarea>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">🖼️ Bocetos, dibujos de ideas, post-its, fotos del proceso</div>
+          <div class="img-upload-zone">
+            <input type="file" accept="image/*" multiple onchange="Img.handle(event,'e3s1')">
+            <div class="upload-icon">📷</div>
+            <div class="upload-text">Tocá aquí para subir imágenes</div>
+            <div class="upload-hint">JPG · PNG · WEBP</div>
+          </div>
+          <div class="img-grid" id="grid-e3s1"></div>
+        </div>
+
+        <div class="teacher-obs-wrap">
+          <div class="teacher-obs-label">🎓 Observaciones del docente</div>
+          <textarea class="teacher-obs-textarea" id="obs-e3s1" rows="2"
+            placeholder="¿Las ideas tienen relación con el problema definido? ¿El proceso de ideación fue genuino?" oninput="App.onChange()"></textarea>
+        </div>
+
+        <div class="section-footer">
+          <div class="section-footer-left">
+            <button class="btn-sm danger" onclick="UI.confirmClear('e3s1')">🗑 Limpiar sección</button>
+          </div>
+          <button class="btn-sm" onclick="UI.showPage('e2s5')">← Anterior</button>
+          <button class="btn-sm" onclick="UI.showPage('e3s2')">Siguiente →</button>
+        </div>
+      </div>
+    </div>
+  </div><!-- /e3s1 -->
+
+  <!-- E3S2: Probando 1, 2, 3 -->
+  <div class="page" id="page-e3s2">
+    <div class="stage-header">
+      <div class="stage-icon e3">🧪</div>
+      <div class="stage-title">
+        <h2>Probando 1, 2, 3</h2>
+        <p>Etapa 3 · Crear y Probar · Sección 2 de 3</p>
+      </div>
+    </div>
+
+    <div class="section-card" id="card-e3s2">
+      <div class="section-card-header open" onclick="UI.toggleCard(this)">
+        <span class="sec-icon">🧪</span>
+        <div class="sec-info">
+          <div class="sec-title">Prototipado y testeo</div>
+          <div class="sec-desc">Construimos un prototipo y lo probamos con usuarios reales</div>
+        </div>
+        <span class="sec-state-badge" id="badge-e3s2">Sin iniciar</span>
+        <span class="sec-toggle open">⌄</span>
+      </div>
+      <div class="section-card-body open">
+
+        <div class="pedagogical-scaffold">
+          <div class="scaffold-item consigna">
+            <div class="scaffold-icon">✏️</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Consigna</div>
+              <div class="scaffold-text">Construyan un <strong>prototipo rápido</strong> (no tiene que ser perfecto, tiene que ser suficiente para probar). Puede ser una maqueta, un boceto detallado, una simulación o un juego de roles. Luego <strong>pruébenlo con personas reales</strong> y documenten qué observan.</div>
+            </div>
+          </div>
+          <div class="scaffold-item ejemplo">
+            <div class="scaffold-icon">💡</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Ejemplo orientador</div>
+              <div class="scaffold-text"><em>"Construimos una maqueta con cartón y palitos que muestra cómo quedaría el espacio de juego. La probamos con 5 niños de la escuela usando roles (simulamos que estaban en la plaza). Observamos que les gustó el tobogán pero no entendían para qué servía el espacio circular…"</em></div>
+            </div>
+          </div>
+          <div class="scaffold-item logro">
+            <div class="scaffold-icon">🎯</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Indicador de logro</div>
+              <div class="scaffold-text">Deben tener <strong>evidencia real del testeo</strong> (fotos, citas textuales de usuarios) y haber identificado al menos <strong>2 cosas que funcionaron</strong> y <strong>2 que no funcionaron</strong>.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">🔧 ¿Qué prototiparon? Descripción del prototipo <span class="field-required">*</span></div>
+          <textarea class="field-textarea" id="e3s2-proto" rows="4"
+            placeholder="Describan qué construyeron o simularon: materiales usados, cómo lo hicieron, qué representa el prototipo..."
+            oninput="App.onChange()"></textarea>
+        </div>
+        <div class="field-group">
+          <div class="field-label">👥 ¿Con quién lo probaron? ¿Cómo fue el testeo? <span class="field-required">*</span></div>
+          <textarea class="field-textarea" id="e3s2-testeo" rows="3"
+            placeholder="¿Quiénes participaron del testeo? ¿Qué les pidieron hacer? ¿Qué preguntas les hicieron?"
+            oninput="App.onChange()"></textarea>
+        </div>
+        <div class="field-group">
+          <div class="field-label">📊 ¿Qué observaron? Resultados del testeo <span class="field-required">*</span></div>
+          <textarea class="field-textarea" id="e3s2-observ" rows="4"
+            placeholder="Reacciones de los usuarios, dificultades que encontraron, comentarios que hicieron, qué les gustó y qué no..."
+            oninput="App.onChange()"></textarea>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">🖼️ Fotos del prototipo y del testeo (muy importante documentar)</div>
+          <div class="img-upload-zone">
+            <input type="file" accept="image/*" multiple onchange="Img.handle(event,'e3s2')">
+            <div class="upload-icon">📷</div>
+            <div class="upload-text">Tocá aquí para subir imágenes</div>
+            <div class="upload-hint">JPG · PNG · WEBP · Suban fotos del prototipo y del testeo</div>
+          </div>
+          <div class="img-grid" id="grid-e3s2"></div>
+        </div>
+
+        <div class="teacher-obs-wrap">
+          <div class="teacher-obs-label">🎓 Observaciones del docente</div>
+          <textarea class="teacher-obs-textarea" id="obs-e3s2" rows="2"
+            placeholder="¿El prototipo responde al problema? ¿El testeo fue riguroso?" oninput="App.onChange()"></textarea>
+        </div>
+
+        <div class="section-footer">
+          <div class="section-footer-left">
+            <button class="btn-sm danger" onclick="UI.confirmClear('e3s2')">🗑 Limpiar sección</button>
+          </div>
+          <button class="btn-sm" onclick="UI.showPage('e3s1')">← Anterior</button>
+          <button class="btn-sm" onclick="UI.showPage('e3s3')">Siguiente →</button>
+        </div>
+      </div>
+    </div>
+  </div><!-- /e3s2 -->
+
+  <!-- E3S3: Ideas + / - -->
+  <div class="page" id="page-e3s3">
+    <div class="stage-header">
+      <div class="stage-icon e3">➕</div>
+      <div class="stage-title">
+        <h2>Ideas + / −</h2>
+        <p>Etapa 3 · Crear y Probar · Sección 3 de 3</p>
+      </div>
+    </div>
+
+    <div class="section-card" id="card-e3s3">
+      <div class="section-card-header open" onclick="UI.toggleCard(this)">
+        <span class="sec-icon">➕➖</span>
+        <div class="sec-info">
+          <div class="sec-title">Ideas + / − · Iteración y reflexión final</div>
+          <div class="sec-desc">Qué funcionó, qué no, cómo mejorar y qué nos llevamos</div>
+        </div>
+        <span class="sec-state-badge" id="badge-e3s3">Sin iniciar</span>
+        <span class="sec-toggle open">⌄</span>
+      </div>
+      <div class="section-card-body open">
+
+        <div class="pedagogical-scaffold">
+          <div class="scaffold-item consigna">
+            <div class="scaffold-icon">✏️</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Consigna</div>
+              <div class="scaffold-text">Analicen los resultados del testeo y reflexionen como equipo. ¿Qué funcionó bien y hay que conservar? ¿Qué falló y hay que cambiar? ¿Cómo sería la próxima versión del prototipo? Finalmente, hagan una <strong>reflexión honesta sobre todo el proceso</strong>.</div>
+            </div>
+          </div>
+          <div class="scaffold-item logro">
+            <div class="scaffold-icon">🎯</div>
+            <div class="scaffold-content">
+              <div class="scaffold-label">Indicador de logro</div>
+              <div class="scaffold-text">La reflexión final debe evidenciar <strong>aprendizaje real</strong>: no solo describir qué hicieron, sino explicar <strong>qué cambiaron en su forma de pensar</strong> gracias al proceso ABT.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">➕ Lo que funcionó bien — mantener en la siguiente versión <span class="field-required">*</span></div>
+          <textarea class="field-textarea" id="e3s3-mas" rows="3"
+            placeholder="¿Qué aspectos de la solución funcionaron? ¿Qué feedback positivo recibieron de los usuarios?"
+            oninput="App.onChange()"></textarea>
+        </div>
+        <div class="field-group">
+          <div class="field-label">➖ Lo que no funcionó — cambiar o mejorar <span class="field-required">*</span></div>
+          <textarea class="field-textarea" id="e3s3-menos" rows="3"
+            placeholder="¿Qué problemas encontraron? ¿Qué no convenció a los usuarios? ¿Qué fue difícil de implementar?"
+            oninput="App.onChange()"></textarea>
+        </div>
+        <div class="field-group">
+          <div class="field-label">🔁 Si tuviéramos más tiempo: próxima versión del prototipo</div>
+          <textarea class="field-textarea" id="e3s3-siguiente" rows="3"
+            placeholder="¿Cómo sería la versión 2.0 de la solución? ¿Qué ajustarían? ¿Qué nuevas ideas surgieron?"
+            oninput="App.onChange()"></textarea>
+        </div>
+        <div class="field-group">
+          <div class="field-label">🌟 Reflexión final del equipo — ¿Qué nos llevamos de este proceso? <span class="field-required">*</span></div>
+          <textarea class="field-textarea" id="e3s3-reflexion" rows="4"
+            placeholder="¿Qué aprendieron que no sabían al inicio? ¿Cómo cambió su forma de ver el problema? ¿Qué fue lo más difícil y lo más valioso?"
+            oninput="App.onChange()"></textarea>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">🖼️ Imágenes del proceso de iteración y del producto final</div>
+          <div class="img-upload-zone">
+            <input type="file" accept="image/*" multiple onchange="Img.handle(event,'e3s3')">
+            <div class="upload-icon">📷</div>
+            <div class="upload-text">Tocá aquí para subir imágenes</div>
+            <div class="upload-hint">JPG · PNG · WEBP</div>
+          </div>
+          <div class="img-grid" id="grid-e3s3"></div>
+        </div>
+
+        <div class="teacher-obs-wrap">
+          <div class="teacher-obs-label">🎓 Evaluación final del docente — Etapa 3 y proceso completo</div>
+          <textarea class="teacher-obs-textarea" id="obs-e3s3" rows="4"
+            placeholder="Valoración general del proceso completo. ¿El grupo logró los objetivos del ABT? Fortalezas, aspectos a mejorar, calificación sugerida..." oninput="App.onChange()"></textarea>
+        </div>
+
+        <div class="section-footer">
+          <div class="section-footer-left">
+            <button class="btn-sm danger" onclick="UI.confirmClear('e3s3')">🗑 Limpiar sección</button>
+          </div>
+          <button class="btn-sm" onclick="UI.showPage('e3s2')">← Anterior</button>
+          <button class="btn-sm success" onclick="PDF.generate()" style="background:#16a34a;color:#fff;border-color:#16a34a;">
+            📄 Generar memoria técnica
+          </button>
+        </div>
+      </div>
+    </div>
+  </div><!-- /e3s3 -->
+
+</main>
+</div><!-- /app -->
+
+<!-- ═══════════════════════════════════
+     MODAL DE CONFIRMACIÓN
+═══════════════════════════════════ -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <h3 id="modal-title">¿Estás seguro?</h3>
+    <p id="modal-msg">Esta acción no se puede deshacer.</p>
+    <div class="modal-actions">
+      <button class="btn-modal" onclick="Modal.close()">Cancelar</button>
+      <button class="btn-modal danger" id="modal-confirm" onclick="Modal.confirm()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     TOAST STACK
+═══════════════════════════════════ -->
+<div class="toast-stack" id="toasts"></div>
+
+
+<!-- ============================================================
+  JAVASCRIPT - LÓGICA DE LA APLICACIÓN
+  Organizado en módulos:
+  - App     → estado central y onChange
+  - UI      → navegación, sidebar, cards, modo docente
+  - Img     → manejo de imágenes base64
+  - Storage → guardar, cargar, reset en localStorage y JSON
+  - PDF     → generación de memoria técnica via print()
+  - Progress→ cálculo y visualización del progreso
+  - Modal   → confirmaciones
+  - Toast   → notificaciones
+============================================================ -->
+<script>
+'use strict';
+
+/* ─────────────────────────────────────────────
+   CONFIGURACIÓN GLOBAL
+───────────────────────────────────────────── */
+const CONFIG = {
+  VERSION:        '2.0',
+  APP_KEY:        'bitacora_abt_v2',     // clave localStorage
+  AUTOSAVE_MS:    20000,                 // 20 segundos
+  MAX_IMG_SIZE:   1200,                  // px max por lado al redimensionar
+  IMG_QUALITY:    0.82,                  // calidad JPEG comprimida
+  MAX_IMG_COUNT:  8,                     // max imágenes por sección
+
+  // Definición de secciones con sus campos requeridos y su etapa
+  SECTIONS: {
+    e1s1: { stage:1, required:['e1s1-desc'],
+             fields:['e1s1-desc'], obs:'obs-e1s1', imgs:'e1s1',
+             name:'Cartografía colectiva' },
+    e1s2: { stage:1, required:['e1s2-quien','e1s2-necesita'],
+             fields:['e1s2-quien','e1s2-siente','e1s2-necesita'], obs:'obs-e1s2', imgs:'e1s2',
+             name:'Mapa persona' },
+    e1s3: { stage:1, required:['e1s3-fuentes','e1s3-aprend'],
+             fields:['e1s3-fuentes','e1s3-aprend','e1s3-relacion'], obs:'obs-e1s3', imgs:'e1s3',
+             name:'Revisión de textos' },
+    e1s4: { stage:1, required:['e1s4-hallazgos','e1s4-siguiente'],
+             fields:['e1s4-hallazgos','e1s4-cambios','e1s4-siguiente'], obs:'obs-e1s4', imgs:'e1s4',
+             name:'Cierre de Etapa 1' },
+    e2s1: { stage:2, required:['e2s1-pos','e2s1-neg'],
+             fields:['e2s1-pos','e2s1-neg','e2s1-oport'], obs:'obs-e2s1', imgs:'e2s1',
+             name:'Ecualizador de oportunidades' },
+    e2s2: { stage:2, required:['e2s2-causas','e2s2-problema','e2s2-consecu'],
+             fields:['e2s2-causas','e2s2-problema','e2s2-consecu'], obs:'obs-e2s2', imgs:'e2s2',
+             name:'Árbol de problemas' },
+    e2s3: { stage:2, required:['e2s3-pregunta','e2s3-justif'],
+             fields:['e2s3-pregunta','e2s3-versiones','e2s3-justif'], obs:'obs-e2s3', imgs:'e2s3',
+             name:'Pregunta guía' },
+    e2s4: { stage:2, required:['e2s4-debe','e2s4-nodebe'],
+             fields:['e2s4-debe','e2s4-nodebe','e2s4-ideal'], obs:'obs-e2s4', imgs:'e2s4',
+             name:'Rombo de requisitos' },
+    e2s5: { stage:2, required:['e2s5-defin'],
+             fields:['e2s5-defin','e2s5-aprendizaje'], obs:'obs-e2s5', imgs:'e2s5',
+             name:'Cierre de Etapa 2' },
+    e3s1: { stage:3, required:['e3s1-lluvia','e3s1-elegidas'],
+             fields:['e3s1-lluvia','e3s1-elegidas'], obs:'obs-e3s1', imgs:'e3s1',
+             name:'Ideas Van!' },
+    e3s2: { stage:3, required:['e3s2-proto','e3s2-testeo','e3s2-observ'],
+             fields:['e3s2-proto','e3s2-testeo','e3s2-observ'], obs:'obs-e3s2', imgs:'e3s2',
+             name:'Probando 1, 2, 3' },
+    e3s3: { stage:3, required:['e3s3-mas','e3s3-menos','e3s3-reflexion'],
+             fields:['e3s3-mas','e3s3-menos','e3s3-siguiente','e3s3-reflexion'], obs:'obs-e3s3', imgs:'e3s3',
+             name:'Ideas + / −' },
+  },
+
+  STAGE_SECTIONS: { 1:['e1s1','e1s2','e1s3','e1s4'], 2:['e2s1','e2s2','e2s3','e2s4','e2s5'], 3:['e3s1','e3s2','e3s3'] }
+};
+
+/* ─────────────────────────────────────────────
+   ESTADO GLOBAL
+   Almacena imágenes como base64 comprimidas
+───────────────────────────────────────────── */
+const State = {
+  imgs: {},           // { secId: [ {data:base64, caption:''}, ... ] }
+  teacherMode: false,
+  currentPage: 'dashboard',
+};
+
+/* ─────────────────────────────────────────────
+   MÓDULO App — punto central de cambios
+───────────────────────────────────────────── */
+const App = {
+  // Se llama en cada cambio de campo. Actualiza progreso + autosave.
+  onChange() {
+    Progress.update();
+    Storage.scheduleAutoSave();
+  }
+};
+
+/* ─────────────────────────────────────────────
+   MÓDULO UI — navegación y visualización
+───────────────────────────────────────────── */
+const UI = {
+  showPage(pageId) {
+    // Ocultar página actual
+    document.querySelectorAll('.page').forEach(p => {
+      p.classList.remove('active');
+    });
+    // Mostrar nueva
+    const page = document.getElementById('page-' + pageId);
+    if (page) page.classList.add('active');
+
+    // Actualizar nav
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    const navBtn = document.getElementById('nav-' + pageId);
+    if (navBtn) navBtn.classList.add('active');
+
+    State.currentPage = pageId;
+    // Scroll al top del main
+    document.querySelector('.main').scrollTop = 0;
+    window.scrollTo(0, 0);
+
+    // Cerrar sidebar en mobile
+    if (window.innerWidth <= 780) UI.closeSidebar();
+  },
+
+  toggleCard(header) {
+    const body   = header.nextElementSibling;
+    const toggle = header.querySelector('.sec-toggle');
+    const open   = body.classList.contains('open');
+    if (open) {
+      body.classList.remove('open');
+      toggle.classList.remove('open');
+      header.classList.remove('open');
+    } else {
+      body.classList.add('open');
+      toggle.classList.add('open');
+      header.classList.add('open');
+    }
+  },
+
+  toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarOverlay').classList.toggle('show');
+  },
+
+  closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('show');
+  },
+
+  toggleTeacherMode() {
+    State.teacherMode = !State.teacherMode;
+    document.body.classList.toggle('teacher-mode', State.teacherMode);
+    const btn = document.getElementById('teacherToggle');
+    if (State.teacherMode) {
+      btn.textContent = '🎓 Modo Docente: ON';
+      btn.classList.add('teacher-on');
+      Toast.show('Modo Docente activado. Se muestran consignas ampliadas y observaciones.', 'warn');
+    } else {
+      btn.textContent = '🎓 Activar Modo Docente';
+      btn.classList.remove('teacher-on');
+      Toast.show('Modo Docente desactivado.', 'ok');
+    }
+  },
+
+  // Limpiar una sección con confirmación
+  confirmClear(secId) {
+    Modal.open(
+      '⚠️ ¿Limpiar esta sección?',
+      `Se borrarán todos los textos e imágenes de la sección "${CONFIG.SECTIONS[secId]?.name || secId}". Esta acción no se puede deshacer.`,
+      () => {
+        // Limpiar textareas de la sección
+        const sec = CONFIG.SECTIONS[secId];
+        if (sec) {
+          sec.fields.forEach(fId => {
+            const el = document.getElementById(fId);
+            if (el) el.value = '';
+          });
+          // Limpiar obs docente
+          const obsEl = document.getElementById(sec.obs);
+          if (obsEl) obsEl.value = '';
+          // Limpiar imágenes
+          State.imgs[secId] = [];
+          Img.render(secId);
+        }
+        App.onChange();
+        Toast.show('Sección limpiada correctamente.', 'ok');
+      }
+    );
+  },
+
+  // Actualizar badge de estado de una sección
+  updateSectionBadge(secId, state) {
+    const badge = document.getElementById('badge-' + secId);
+    if (!badge) return;
+    badge.className = 'sec-state-badge';
+    if (state === 'done') {
+      badge.classList.add('done'); badge.textContent = '✓ Completa';
+    } else if (state === 'partial') {
+      badge.classList.add('partial'); badge.textContent = '⏳ En proceso';
+    } else {
+      badge.textContent = 'Sin iniciar';
+    }
+  }
+};
+
+/* ─────────────────────────────────────────────
+   MÓDULO Img — manejo de imágenes
+   Comprime a base64 antes de almacenar
+───────────────────────────────────────────── */
+const Img = {
+  // Procesar archivos subidos
+  handle(event, secId) {
+    const files = Array.from(event.target.files);
+    if (!State.imgs[secId]) State.imgs[secId] = [];
+
+    const remaining = CONFIG.MAX_IMG_COUNT - State.imgs[secId].length;
+    if (remaining <= 0) {
+      Toast.show(`Máximo ${CONFIG.MAX_IMG_COUNT} imágenes por sección.`, 'warn');
+      event.target.value = '';
+      return;
+    }
+
+    const toProcess = files.slice(0, remaining);
+    if (files.length > remaining) {
+      Toast.show(`Se agregarán solo ${remaining} imagen(es) (límite alcanzado).`, 'warn');
+    }
+
+    let processed = 0;
+    toProcess.forEach(file => {
+      if (!file.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        // Comprimir antes de guardar
+        Img.compress(e.target.result, (compressed) => {
+          State.imgs[secId].push({ data: compressed, caption: '' });
+          processed++;
+          if (processed === toProcess.length) {
+            Img.render(secId);
+            App.onChange();
+          }
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+
+    event.target.value = '';
+  },
+
+  // Comprimir imagen usando canvas (no requiere librerías externas)
+  compress(dataUrl, callback) {
+    const img = new Image();
+    img.onload = () => {
+      let { width: w, height: h } = img;
+      const max = CONFIG.MAX_IMG_SIZE;
+      if (w > max || h > max) {
+        if (w > h) { h = Math.round(h * max / w); w = max; }
+        else       { w = Math.round(w * max / h); h = max; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      callback(canvas.toDataURL('image/jpeg', CONFIG.IMG_QUALITY));
+    };
+    img.onerror = () => callback(dataUrl); // si falla, usar original
+    img.src = dataUrl;
+  },
+
+  // Renderizar grid de imágenes de una sección
+  render(secId) {
+    const grid = document.getElementById('grid-' + secId);
+    if (!grid) return;
+    const imgs = State.imgs[secId] || [];
+
+    grid.innerHTML = imgs.map((img, idx) => `
+      <div class="img-item">
+        <img src="${img.data}" alt="Imagen ${idx+1}" loading="lazy">
+        <button class="img-remove" onclick="Img.remove('${secId}',${idx})" title="Eliminar imagen">×</button>
+      </div>
+    `).join('');
+  },
+
+  remove(secId, idx) {
+    if (!State.imgs[secId]) return;
+    State.imgs[secId].splice(idx, 1);
+    Img.render(secId);
+    App.onChange();
+  }
+};
+
+/* ─────────────────────────────────────────────
+   MÓDULO Progress — cálculo del progreso
+───────────────────────────────────────────── */
+const Progress = {
+  // Retorna 'done'|'partial'|'empty' para una sección
+  getSectionState(secId) {
+    const sec = CONFIG.SECTIONS[secId];
+    if (!sec) return 'empty';
+
+    // Verificar campos requeridos
+    const allRequired = sec.required.every(fId => {
+      const el = document.getElementById(fId);
+      return el && el.value.trim().length >= 10; // mínimo 10 chars
+    });
+
+    // Verificar si hay algo escrito en cualquier campo
+    const anyFilled = sec.fields.some(fId => {
+      const el = document.getElementById(fId);
+      return el && el.value.trim().length > 0;
+    });
+    const hasImgs = (State.imgs[secId] || []).length > 0;
+
+    if (allRequired) return 'done';
+    if (anyFilled || hasImgs) return 'partial';
+    return 'empty';
+  },
+
+  update() {
+    const total = Object.keys(CONFIG.SECTIONS).length;
+    let filled  = 0;
+
+    Object.keys(CONFIG.SECTIONS).forEach(secId => {
+      const st = Progress.getSectionState(secId);
+      UI.updateSectionBadge(secId, st);
+
+      // Actualizar dot en nav
+      const dot = document.getElementById('state-' + secId);
+      if (dot) {
+        dot.className = 'nav-state';
+        if (st === 'done')    dot.classList.add('done');
+        if (st === 'partial') dot.classList.add('partial');
+      }
+
+      if (st === 'done') filled++;
+    });
+
+    // Barra general
+    const pct = Math.round((filled / total) * 100);
+    document.getElementById('progFill').style.width = pct + '%';
+    document.getElementById('progPct').textContent  = pct + '%';
+
+    // Pills por etapa + dashboard stats
+    [1, 2, 3].forEach(stage => {
+      const secs    = CONFIG.STAGE_SECTIONS[stage];
+      const total_s = secs.length;
+      const done_s  = secs.filter(s => Progress.getSectionState(s) === 'done').length;
+      const part_s  = secs.filter(s => Progress.getSectionState(s) === 'partial').length;
+
+      const pill   = document.getElementById('pill-e' + stage);
+      const detail = document.getElementById('pill-e' + stage + '-detail');
+      const stat   = document.getElementById('dash-stat-' + stage);
+
+      if (stat)   stat.textContent   = `${done_s} / ${total_s} secciones`;
+      if (detail) detail.textContent = done_s === total_s ? '¡Completa!' : part_s > 0 ? 'En proceso' : 'Sin iniciar';
+
+      if (pill) {
+        pill.className = 'stage-pill';
+        if (done_s === total_s)      pill.classList.add('done');
+        else if (done_s > 0 || part_s > 0) pill.classList.add('started');
+      }
+    });
+
+    // Actualizar portada de impresión
+    const n = document.getElementById('proj-nombre');
+    if (n) {
+      document.getElementById('printTitle').textContent       = n.value || 'Mi Proyecto ABT';
+      document.getElementById('printIntegrantes').textContent = document.getElementById('proj-integrantes')?.value || '—';
+      document.getElementById('printGrado').textContent       = document.getElementById('proj-grado')?.value || '—';
+      document.getElementById('printCentro').textContent      = document.getElementById('proj-centro')?.value || '—';
+      document.getElementById('printFecha').textContent       = document.getElementById('proj-fecha')?.value || '—';
+    }
+  }
+};
+
+/* ─────────────────────────────────────────────
+   MÓDULO Storage — guardar / cargar / reset
+───────────────────────────────────────────── */
+const Storage = {
+  _saveTimer: null,
+
+  // Recolectar todos los datos del proyecto
+  gather() {
+    const campos = {};
+    // Todos los textareas con id
+    document.querySelectorAll('textarea[id]').forEach(ta => {
+      campos[ta.id] = ta.value;
+    });
+    // Inputs del proyecto
+    ['proj-nombre','proj-integrantes','proj-grado','proj-centro','proj-fecha'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) campos[id] = el.value;
+    });
+
+    return {
+      version:      CONFIG.VERSION,
+      savedAt:      new Date().toISOString(),
+      proyecto:     {
+        nombre:      document.getElementById('proj-nombre')?.value || '',
+        integrantes: document.getElementById('proj-integrantes')?.value || '',
+        grado:       document.getElementById('proj-grado')?.value || '',
+        centro:      document.getElementById('proj-centro')?.value || '',
+        fecha:       document.getElementById('proj-fecha')?.value || '',
+      },
+      campos,
+      imagenes:     State.imgs,
+      teacherMode:  State.teacherMode,
+    };
+  },
+
+  // Aplicar datos guardados a la interfaz
+  apply(data) {
+    if (!data) return;
+
+    // Proyecto
+    const p = data.proyecto || {};
+    const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+    setVal('proj-nombre', p.nombre);
+    setVal('proj-integrantes', p.integrantes);
+    setVal('proj-grado', p.grado);
+    setVal('proj-centro', p.centro);
+    setVal('proj-fecha', p.fecha);
+
+    // Campos
+    if (data.campos) {
+      Object.entries(data.campos).forEach(([id, val]) => {
+        const el = document.getElementById(id);
+        if (el) el.value = val || '';
+      });
+    }
+
+    // Imágenes
+    State.imgs = data.imagenes || {};
+    Object.keys(CONFIG.SECTIONS).forEach(secId => {
+      Img.render(secId);
+    });
+  },
+
+  // Guardar JSON y descargar archivo
+  save() {
+    const data = Storage.gather();
+    const nombre   = data.proyecto.nombre || 'proyecto';
+    const grupo    = data.proyecto.integrantes.split(',')[0].trim() || 'grupo';
+    const fecha    = new Date().toISOString().slice(0,10);
+    const safeName = (nombre + '-' + grupo).replace(/[^a-z0-9]/gi, '-').toLowerCase().slice(0,40);
+
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = `bitacora-abt-${safeName}-${fecha}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    // También guardar en localStorage
+    Storage._saveToLocal(json);
+    Toast.show('✅ Proyecto guardado. El archivo JSON fue descargado.', 'ok');
+    AutoSave.markSaved();
+  },
+
+  _saveToLocal(json) {
+    try { localStorage.setItem(CONFIG.APP_KEY, json); } catch(e) {
+      // localStorage puede estar lleno (mucho contenido con imágenes)
+      console.warn('localStorage lleno, no se pudo autoguardar:', e);
+    }
+  },
+
+  // Autoguardado programado (debounced)
+  scheduleAutoSave() {
+    clearTimeout(Storage._saveTimer);
+    Storage._saveTimer = setTimeout(() => {
+      AutoSave.save();
+    }, 2000); // 2s después del último cambio
+  },
+
+  // Disparar carga de archivo
+  triggerLoad() {
+    document.getElementById('loadInput').click();
+  },
+
+  // Cargar desde JSON
+  load(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target.result);
+        Storage.apply(data);
+        Progress.update();
+        Toast.show('📂 Proyecto cargado correctamente.', 'ok');
+      } catch(err) {
+        Toast.show('❌ Error al leer el archivo. ¿Es un JSON válido de esta app?', 'error');
+        console.error('Error cargando JSON:', err);
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+  },
+
+  // Confirmar y reiniciar proyecto
+  confirmReset() {
+    Modal.open(
+      '🔄 ¿Reiniciar el proyecto?',
+      'Se borrarán TODOS los datos del proyecto (textos, imágenes, configuración). Esta acción no se puede deshacer.',
+      () => {
+        // Limpiar todo
+        document.querySelectorAll('textarea[id], input.meta-input, .project-name-input').forEach(el => {
+          el.value = '';
+        });
+        State.imgs = {};
+        Object.keys(CONFIG.SECTIONS).forEach(secId => Img.render(secId));
+        Progress.update();
+        UI.showPage('dashboard');
+        try { localStorage.removeItem(CONFIG.APP_KEY); } catch(e) {}
+        Toast.show('🔄 Proyecto reiniciado.', 'warn');
+      }
+    );
+  }
+};
+
+/* ─────────────────────────────────────────────
+   MÓDULO AutoSave — autoguardado en localStorage
+───────────────────────────────────────────── */
+const AutoSave = {
+  _timer: null,
+
+  start() {
+    // Guardar cada 20 segundos
+    AutoSave._timer = setInterval(() => {
+      AutoSave.save();
+    }, CONFIG.AUTOSAVE_MS);
+  },
+
+  save() {
+    const dot   = document.getElementById('autosaveDot');
+    const label = document.getElementById('autosaveLabel');
+    if (dot) dot.className = 'autosave-dot saving';
+    if (label) label.textContent = 'Guardando...';
+
+    // Usar setTimeout para no bloquear el hilo de UI
+    setTimeout(() => {
+      try {
+        const json = JSON.stringify(Storage.gather());
+        localStorage.setItem(CONFIG.APP_KEY, json);
+        AutoSave.markSaved();
+      } catch(e) {
+        if (dot) dot.className = 'autosave-dot';
+        if (label) label.textContent = 'Autoguardado: sin espacio';
+      }
+    }, 50);
+  },
+
+  markSaved() {
+    const dot   = document.getElementById('autosaveDot');
+    const label = document.getElementById('autosaveLabel');
+    const now   = new Date();
+    const time  = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    if (dot)   dot.className = 'autosave-dot saved';
+    if (label) label.textContent = `Guardado a las ${time}`;
+  },
+
+  // Intentar restaurar desde localStorage al inicio
+  tryRestore() {
+    try {
+      const saved = localStorage.getItem(CONFIG.APP_KEY);
+      if (!saved) return false;
+      const data = JSON.parse(saved);
+      // Solo restaurar si hay datos del proyecto
+      if (!data.proyecto?.nombre && !Object.values(data.campos || {}).some(v => v?.trim())) return false;
+
+      // Mostrar diálogo de restauración
+      Modal.open(
+        '📂 ¿Restaurar trabajo anterior?',
+        `Se encontró un proyecto guardado automáticamente${data.proyecto?.nombre ? `: "${data.proyecto.nombre}"` : ''}. ¿Deseas cargarlo?`,
+        () => {
+          Storage.apply(data);
+          Progress.update();
+          Toast.show('✅ Trabajo anterior restaurado correctamente.', 'ok');
+        },
+        'Sí, restaurar'
+      );
+      return true;
+    } catch(e) {
+      return false;
+    }
+  }
+};
+
+/* ─────────────────────────────────────────────
+   MÓDULO PDF — memoria técnica via print
+   Usa CSS @media print para dar formato al documento
+───────────────────────────────────────────── */
+const PDF = {
+  generate() {
+    // Verificar que haya contenido mínimo
+    const nombre = document.getElementById('proj-nombre')?.value?.trim();
+    if (!nombre) {
+      Toast.show('⚠️ Completá al menos el nombre del proyecto antes de generar el PDF.', 'warn');
+      document.getElementById('proj-nombre').classList.add('shake');
+      setTimeout(() => document.getElementById('proj-nombre').classList.remove('shake'), 400);
+      return;
+    }
+
+    // Asegurar que todas las secciones estén abiertas para el print
+    const wasOpen = {};
+    document.querySelectorAll('.section-card-body').forEach((body, i) => {
+      wasOpen[i] = body.classList.contains('open');
+      body.classList.add('open');
+    });
+
+    Toast.show('📄 Preparando memoria técnica...', 'ok');
+
+    setTimeout(() => {
+      window.print();
+
+      // Restaurar estado de secciones
+      document.querySelectorAll('.section-card-body').forEach((body, i) => {
+        if (!wasOpen[i]) body.classList.remove('open');
+      });
+    }, 300);
+  }
+};
+
+/* ─────────────────────────────────────────────
+   MÓDULO Modal — confirmaciones
+───────────────────────────────────────────── */
+const Modal = {
+  _cb: null,
+
+  open(title, msg, callback, confirmLabel = 'Confirmar') {
+    Modal._cb = callback;
+    document.getElementById('modal-title').textContent   = title;
+    document.getElementById('modal-msg').textContent     = msg;
+    document.getElementById('modal-confirm').textContent = confirmLabel;
+    document.getElementById('modal').classList.add('show');
+  },
+
+  close() {
+    document.getElementById('modal').classList.remove('show');
+    Modal._cb = null;
+  },
+
+  confirm() {
+    if (Modal._cb) Modal._cb();
+    Modal.close();
+  }
+};
+
+/* ─────────────────────────────────────────────
+   MÓDULO Toast — notificaciones
+───────────────────────────────────────────── */
+const Toast = {
+  show(msg, type = '') {
+    const stack = document.getElementById('toasts');
+    const t     = document.createElement('div');
+    t.className = 'toast ' + type;
+    t.textContent = msg;
+    stack.appendChild(t);
+
+    setTimeout(() => {
+      t.style.opacity   = '0';
+      t.style.transform = 'translateY(4px)';
+      t.style.transition = 'opacity .3s, transform .3s';
+      setTimeout(() => { if (t.parentNode) stack.removeChild(t); }, 300);
+    }, 3500);
+  }
+};
+
+/* ─────────────────────────────────────────────
+   INICIALIZACIÓN
+───────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+
+  // Mostrar dashboard por defecto
+  UI.showPage('dashboard');
+
+  // Intentar restaurar desde localStorage
+  AutoSave.tryRestore();
+
+  // Iniciar autoguardado periódico
+  AutoSave.start();
+
+  // Calcular progreso inicial
+  Progress.update();
+
+  // Aviso antes de cerrar la pestaña si hay datos
+  window.addEventListener('beforeunload', (e) => {
+    const nombre = document.getElementById('proj-nombre')?.value?.trim();
+    if (nombre) {
+      e.preventDefault();
+      e.returnValue = '¿Seguro que querés salir? Guardá el proyecto primero para no perder los cambios.';
+      return e.returnValue;
+    }
+  });
+
+  // Cerrar modal con Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') Modal.close();
+  });
+
+  // Contador de caracteres en textarea (feedback de escritura)
+  document.querySelectorAll('.field-textarea').forEach(ta => {
+    const updateCounter = () => {
+      // Buscar el counter asociado (hermano siguiente)
+      const ccId = 'cc-' + ta.id;
+      const cc   = document.getElementById(ccId);
+      if (cc) {
+        const len = ta.value.trim().length;
+        cc.textContent = len + (len === 1 ? ' carácter' : ' caracteres');
+        cc.classList.toggle('warn', len >= 30);
+      }
+    };
+    ta.addEventListener('input', updateCounter);
+    updateCounter();
+  });
+
+});
+</script>
+
+</body>
+</html>
